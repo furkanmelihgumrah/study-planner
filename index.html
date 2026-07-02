@@ -4,6 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>KPSS Haftalık Plan & Tekrar Notları</title>
+    
+    <!-- Firebase Kütüphaneleri -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&family=Roboto:wght@400;500;700&display=swap');
 
@@ -49,103 +54,28 @@
             --day-card-text: #333;
         }
 
-        body {
-            font-family: 'Roboto', sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            margin: 0;
-            padding: 2vh 2vw;
-            height: 100vh;
-            box-sizing: border-box;
-            display: flex;
-            justify-content: center;
-            overflow: hidden; 
-            transition: background-color 0.3s, color 0.3s;
-        }
-
-        .container {
-            background-color: var(--container-bg);
-            max-width: 1400px;
-            width: 100%;
-            height: 100%;
-            padding: 15px 25px;
-            border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-            display: flex;
-            flex-direction: column;
-            box-sizing: border-box;
-            transition: background-color 0.3s;
-            overflow: hidden;
-        }
-
+        body { font-family: 'Roboto', sans-serif; background-color: var(--bg-color); color: var(--text-color); margin: 0; padding: 2vh 2vw; height: 100vh; box-sizing: border-box; display: flex; justify-content: center; overflow: hidden; transition: background-color 0.3s, color 0.3s; }
+        .container { background-color: var(--container-bg); max-width: 1400px; width: 100%; height: 100%; padding: 15px 25px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); display: flex; flex-direction: column; box-sizing: border-box; transition: background-color 0.3s; overflow: hidden; position: relative; }
         .view-section { display: none; flex-direction: column; height: 100%; }
         .view-section.active { display: flex; }
-
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 2px solid var(--card-border);
-            padding-bottom: 10px;
-            margin-bottom: 15px;
-            flex-shrink: 0;
-            flex-wrap: wrap;
-            gap: 15px;
-        }
-
-        .header h1 {
-            font-family: 'Oswald', sans-serif;
-            font-size: 36px;
-            margin: 0;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-        }
-
-        .countdown {
-            background-color: #dc3545;
-            color: white;
-            padding: 5px 15px;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: 500;
-            text-transform: uppercase;
-            box-shadow: 0 4px 6px rgba(220, 53, 69, 0.3);
-            text-align: center;
-        }
-
-        .countdown span { font-size: 24px; font-weight: 700; margin: 0 5px; font-family: 'Oswald', sans-serif; }
-
-        .header-controls { display: flex; gap: 10px; align-items: stretch; flex-wrap: wrap; }
+        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--card-border); padding-bottom: 10px; margin-bottom: 15px; flex-shrink: 0; flex-wrap: wrap; gap: 15px; }
+        .header h1 { font-family: 'Oswald', sans-serif; font-size: 36px; margin: 0; text-transform: uppercase; letter-spacing: 2px; }
         
-        .btn-custom {
-            background-color: var(--header-bg);
-            color: var(--header-text);
-            border: 1px solid var(--card-border);
-            padding: 8px 15px;
-            border-radius: 15px;
-            font-size: 14px;
-            font-family: 'Roboto', sans-serif;
-            text-align: center;
-            transition: all 0.3s;
-            cursor: pointer;
-            font-weight: bold;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
+        /* Yükleniyor Ekranı */
+        #loading-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: var(--container-bg); z-index: 9999; display: flex; justify-content: center; align-items: center; flex-direction: column; transition: opacity 0.5s; }
+        .loader { border: 6px solid var(--input-border); border-top: 6px solid var(--btn-blue); border-radius: 50%; width: 50px; height: 50px; animation: spin 1s linear infinite; margin-bottom: 15px; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
+        .countdown { background-color: #dc3545; color: white; padding: 5px 15px; border-radius: 8px; font-size: 16px; font-weight: 500; text-transform: uppercase; box-shadow: 0 4px 6px rgba(220, 53, 69, 0.3); text-align: center; }
+        .countdown span { font-size: 24px; font-weight: 700; margin: 0 5px; font-family: 'Oswald', sans-serif; }
+        .header-controls { display: flex; gap: 10px; align-items: stretch; flex-wrap: wrap; }
+        .btn-custom { background-color: var(--header-bg); color: var(--header-text); border: 1px solid var(--card-border); padding: 8px 15px; border-radius: 15px; font-size: 14px; font-family: 'Roboto', sans-serif; text-align: center; transition: all 0.3s; cursor: pointer; font-weight: bold; display: flex; align-items: center; justify-content: center; }
         .btn-custom:hover { opacity: 0.8; }
         .btn-custom:disabled { opacity: 0.4; cursor: not-allowed; }
         .btn-primary { background-color: var(--btn-blue); border-color: var(--btn-blue); color: white; }
-
-        .datetime-display {
-            background-color: var(--header-bg); color: var(--header-text); border: 1px solid var(--card-border);
-            padding: 8px 15px; border-radius: 15px; font-size: 14px; font-family: 'Roboto', sans-serif;
-            font-weight: bold; display: flex; align-items: center; justify-content: center; min-width: 220px; letter-spacing: 0.5px;
-        }
-
+        .datetime-display { background-color: var(--header-bg); color: var(--header-text); border: 1px solid var(--card-border); padding: 8px 15px; border-radius: 15px; font-size: 14px; font-family: 'Roboto', sans-serif; font-weight: bold; display: flex; align-items: center; justify-content: center; min-width: 220px; letter-spacing: 0.5px; }
+        
         .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; flex-grow: 1; margin-bottom: 10px; min-height: 0; }
-
         .day-card, .notes-card { border: 2px solid var(--card-border); border-radius: 15px; padding: 10px 15px; display: flex; flex-direction: column; transition: all 0.3s; overflow-y: auto; }
         .day-card, #planner-notes { background-color: var(--day-card-bg); color: var(--day-card-text); }
         .notes-card { background-color: var(--note-bg); }
@@ -162,18 +92,15 @@
         .task-text:empty:before { content: attr(data-placeholder); color: #999; pointer-events: none; }
         .task-text:focus { border-bottom: 1px solid #007bff; }
         .task-row input[type="checkbox"]:checked + .task-text { text-decoration: line-through; color: var(--checked-text); border-bottom: 1px dashed transparent; }
-
         .btn-clear { display: block; width: 250px; margin: 5px auto 0; padding: 8px; background-color: #dc3545; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 15px; font-weight: bold; flex-shrink: 0; }
         .btn-clear:hover { background-color: #c82333; }
 
-        /* --- TEKRAR NOTLARI SAYFASI --- */
         .course-list { display: flex; flex-direction: column; gap: 15px; overflow-y: auto; padding-right: 10px; flex-grow: 1; }
         .course-detail { border: 2px solid var(--card-border); border-radius: 10px; background-color: var(--container-bg); overflow: hidden; flex-shrink: 0; }
         .course-detail summary { background-color: var(--header-bg); color: var(--header-text); padding: 15px; font-size: 18px; font-weight: bold; cursor: pointer; list-style: none; text-transform: uppercase; letter-spacing: 1px; display: flex; justify-content: space-between; }
         .course-detail summary::-webkit-details-marker { display: none; }
         .course-detail summary::after { content: '+'; font-size: 20px; }
         .course-detail[open] summary::after { content: '-'; }
-
         .unit-container { padding: 15px; background-color: var(--note-bg); display: flex; flex-direction: column; gap: 12px; }
         .unit-details { background-color: var(--container-bg); border: 1px solid var(--input-border); border-radius: 8px; overflow: hidden; box-shadow: 0 2px 5px rgba(0,0,0,0.03); }
         .unit-summary { padding: 12px 15px; margin: 0; color: var(--unit-text); font-size: 15px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; list-style: none; background-color: transparent; transition: all 0.2s; }
@@ -182,16 +109,12 @@
         .unit-details[open] .unit-summary::after { transform: rotate(180deg); }
         .unit-details[open] .unit-summary { border-bottom: 1px solid var(--input-border); }
         .unit-content { padding: 15px; }
-
         .quick-add-wrap { display: flex; margin-bottom: 15px; background-color: var(--container-bg); border: 1px solid var(--input-border); border-radius: 8px; overflow: hidden; }
         .quick-add-input { flex-grow: 1; border: none; padding: 10px 15px; font-size: 14px; font-family: 'Roboto', sans-serif; background: transparent; color: var(--text-color); outline: none; }
         .quick-add-btn { background-color: var(--btn-blue); color: white; border: none; padding: 0 15px; cursor: pointer; font-weight: bold; font-size: 18px; }
         .quick-add-btn:hover { background-color: #0b5ed7; }
-        
-        /* YENİ: TEKRAR ET BUTONU */
         .btn-review { background-color: #198754; color: white; border: none; padding: 0 15px; cursor: pointer; font-weight: bold; font-size: 14px; display: flex; align-items: center; }
         .btn-review:hover { background-color: #157347; }
-        
         .notes-ul { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 12px; align-items: start; }
         .note-item { background-color: var(--note-item-bg); border: 1px solid var(--note-item-border); border-left: 4px solid var(--btn-blue); padding: 10px 12px; border-radius: 6px; display: flex; align-items: flex-start; gap: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); transition: transform 0.2s, box-shadow 0.2s; width: 100%; box-sizing: border-box; }
         .note-item:hover { transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,0.05); }
@@ -199,43 +122,16 @@
         .note-delete { cursor: pointer; color: #dc3545; background: none; border: none; font-size: 14px; padding: 2px; opacity: 0.5; transition: opacity 0.2s; }
         .note-item:hover .note-delete { opacity: 1; }
 
-        /* YENİ: POP-UP (MODAL) STİLLERİ */
-        .modal-overlay {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background-color: rgba(0, 0, 0, 0.75); z-index: 1000; justify-content: center; align-items: center;
-            backdrop-filter: blur(4px);
-        }
-        .modal-content {
-            background-color: var(--container-bg); border: 2px solid var(--btn-blue); border-radius: 15px;
-            width: 90%; max-width: 600px; min-height: 350px; display: flex; flex-direction: column;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.4); position: relative; animation: popIn 0.3s ease-out;
-        }
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.75); z-index: 10000; justify-content: center; align-items: center; backdrop-filter: blur(4px); }
+        .modal-content { background-color: var(--container-bg); border: 2px solid var(--btn-blue); border-radius: 15px; width: 90%; max-width: 600px; min-height: 350px; display: flex; flex-direction: column; box-shadow: 0 10px 30px rgba(0,0,0,0.4); position: relative; animation: popIn 0.3s ease-out; }
         @keyframes popIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-        
-        .modal-close {
-            position: absolute; top: 12px; right: 15px; background: none; border: none;
-            font-size: 24px; color: var(--header-text); cursor: pointer; opacity: 0.8; transition: 0.2s;
-        }
+        .modal-close { position: absolute; top: 12px; right: 15px; background: none; border: none; font-size: 24px; color: var(--header-text); cursor: pointer; opacity: 0.8; transition: 0.2s; }
         .modal-close:hover { opacity: 1; color: #ff4d4d; transform: scale(1.1); }
-        
-        .modal-header {
-            background-color: var(--header-bg); color: var(--header-text); padding: 15px 40px 15px 15px;
-            font-size: 18px; font-weight: bold; text-align: center; border-radius: 12px 12px 0 0;
-        }
-        .modal-body {
-            flex-grow: 1; display: flex; justify-content: center; align-items: center;
-            padding: 30px; text-align: center; background-color: var(--day-card-bg);
-        }
-        #modal-note-text {
-            font-size: 24px; line-height: 1.5; color: var(--day-card-text); font-weight: 500;
-        }
-        .modal-footer {
-            display: flex; justify-content: space-between; align-items: center; padding: 15px 25px;
-            border-top: 1px solid var(--input-border); background-color: var(--note-bg); border-radius: 0 0 12px 12px;
-        }
-        #modal-progress {
-            font-size: 18px; font-weight: bold; font-family: 'Oswald', sans-serif; color: var(--btn-blue);
-        }
+        .modal-header { background-color: var(--header-bg); color: var(--header-text); padding: 15px 40px 15px 15px; font-size: 18px; font-weight: bold; text-align: center; border-radius: 12px 12px 0 0; }
+        .modal-body { flex-grow: 1; display: flex; justify-content: center; align-items: center; padding: 30px; text-align: center; background-color: var(--day-card-bg); }
+        #modal-note-text { font-size: 24px; line-height: 1.5; color: var(--day-card-text); font-weight: 500; }
+        .modal-footer { display: flex; justify-content: space-between; align-items: center; padding: 15px 25px; border-top: 1px solid var(--input-border); background-color: var(--note-bg); border-radius: 0 0 12px 12px; }
+        #modal-progress { font-size: 18px; font-weight: bold; font-family: 'Oswald', sans-serif; color: var(--btn-blue); }
 
         @media (max-width: 900px) {
             body { height: auto; overflow: auto; }
@@ -248,6 +144,13 @@
 <body spellcheck="false">
 
 <div class="container">
+    
+    <!-- Sunucudan veriler çekilirken gösterilecek ekran -->
+    <div id="loading-overlay">
+        <div class="loader"></div>
+        <h2 style="font-family: 'Oswald', sans-serif;">Veritabanına Bağlanılıyor...</h2>
+        <p>Senkronize ediliyor, lütfen bekleyin.</p>
+    </div>
 
     <!-- 1. GÖRÜNÜM: HAFTALIK PLAN -->
     <div id="planner-view" class="view-section active">
@@ -264,71 +167,71 @@
         <div class="grid">
             <div class="day-card" id="pazartesi">
                 <h3>Pazartesi</h3>
-                <div class="task-row"><input type="checkbox"><div contenteditable="true" class="task-text" data-placeholder="Görev ekle..."></div></div>
-                <div class="task-row"><input type="checkbox"><div contenteditable="true" class="task-text" data-placeholder="Görev ekle..."></div></div>
-                <div class="task-row"><input type="checkbox"><div contenteditable="true" class="task-text" data-placeholder="Görev ekle..."></div></div>
-                <div class="task-row"><input type="checkbox"><div contenteditable="true" class="task-text" data-placeholder="Görev ekle..."></div></div>
-                <div class="task-row"><input type="checkbox"><div contenteditable="true" class="task-text" data-placeholder="Görev ekle..."></div></div>
+                <div class="task-row"><input type="checkbox" id="check_0"><div id="task_0" contenteditable="true" class="task-text" data-placeholder="Görev ekle..."></div></div>
+                <div class="task-row"><input type="checkbox" id="check_1"><div id="task_1" contenteditable="true" class="task-text" data-placeholder="Görev ekle..."></div></div>
+                <div class="task-row"><input type="checkbox" id="check_2"><div id="task_2" contenteditable="true" class="task-text" data-placeholder="Görev ekle..."></div></div>
+                <div class="task-row"><input type="checkbox" id="check_3"><div id="task_3" contenteditable="true" class="task-text" data-placeholder="Görev ekle..."></div></div>
+                <div class="task-row"><input type="checkbox" id="check_4"><div id="task_4" contenteditable="true" class="task-text" data-placeholder="Görev ekle..."></div></div>
             </div>
             <div class="day-card" id="sali">
                 <h3>Salı</h3>
-                <div class="task-row"><input type="checkbox"><div contenteditable="true" class="task-text" data-placeholder="Görev ekle..."></div></div>
-                <div class="task-row"><input type="checkbox"><div contenteditable="true" class="task-text" data-placeholder="Görev ekle..."></div></div>
-                <div class="task-row"><input type="checkbox"><div contenteditable="true" class="task-text" data-placeholder="Görev ekle..."></div></div>
-                <div class="task-row"><input type="checkbox"><div contenteditable="true" class="task-text" data-placeholder="Görev ekle..."></div></div>
-                <div class="task-row"><input type="checkbox"><div contenteditable="true" class="task-text" data-placeholder="Görev ekle..."></div></div>
+                <div class="task-row"><input type="checkbox" id="check_5"><div id="task_5" contenteditable="true" class="task-text" data-placeholder="Görev ekle..."></div></div>
+                <div class="task-row"><input type="checkbox" id="check_6"><div id="task_6" contenteditable="true" class="task-text" data-placeholder="Görev ekle..."></div></div>
+                <div class="task-row"><input type="checkbox" id="check_7"><div id="task_7" contenteditable="true" class="task-text" data-placeholder="Görev ekle..."></div></div>
+                <div class="task-row"><input type="checkbox" id="check_8"><div id="task_8" contenteditable="true" class="task-text" data-placeholder="Görev ekle..."></div></div>
+                <div class="task-row"><input type="checkbox" id="check_9"><div id="task_9" contenteditable="true" class="task-text" data-placeholder="Görev ekle..."></div></div>
             </div>
             <div class="day-card" id="carsamba">
                 <h3>Çarşamba</h3>
-                <div class="task-row"><input type="checkbox"><div contenteditable="true" class="task-text" data-placeholder="Görev ekle..."></div></div>
-                <div class="task-row"><input type="checkbox"><div contenteditable="true" class="task-text" data-placeholder="Görev ekle..."></div></div>
-                <div class="task-row"><input type="checkbox"><div contenteditable="true" class="task-text" data-placeholder="Görev ekle..."></div></div>
-                <div class="task-row"><input type="checkbox"><div contenteditable="true" class="task-text" data-placeholder="Görev ekle..."></div></div>
-                <div class="task-row"><input type="checkbox"><div contenteditable="true" class="task-text" data-placeholder="Görev ekle..."></div></div>
+                <div class="task-row"><input type="checkbox" id="check_10"><div id="task_10" contenteditable="true" class="task-text" data-placeholder="Görev ekle..."></div></div>
+                <div class="task-row"><input type="checkbox" id="check_11"><div id="task_11" contenteditable="true" class="task-text" data-placeholder="Görev ekle..."></div></div>
+                <div class="task-row"><input type="checkbox" id="check_12"><div id="task_12" contenteditable="true" class="task-text" data-placeholder="Görev ekle..."></div></div>
+                <div class="task-row"><input type="checkbox" id="check_13"><div id="task_13" contenteditable="true" class="task-text" data-placeholder="Görev ekle..."></div></div>
+                <div class="task-row"><input type="checkbox" id="check_14"><div id="task_14" contenteditable="true" class="task-text" data-placeholder="Görev ekle..."></div></div>
             </div>
             <div class="day-card" id="persembe">
                 <h3>Perşembe</h3>
-                <div class="task-row"><input type="checkbox"><div contenteditable="true" class="task-text" data-placeholder="Görev ekle..."></div></div>
-                <div class="task-row"><input type="checkbox"><div contenteditable="true" class="task-text" data-placeholder="Görev ekle..."></div></div>
-                <div class="task-row"><input type="checkbox"><div contenteditable="true" class="task-text" data-placeholder="Görev ekle..."></div></div>
-                <div class="task-row"><input type="checkbox"><div contenteditable="true" class="task-text" data-placeholder="Görev ekle..."></div></div>
-                <div class="task-row"><input type="checkbox"><div contenteditable="true" class="task-text" data-placeholder="Görev ekle..."></div></div>
+                <div class="task-row"><input type="checkbox" id="check_15"><div id="task_15" contenteditable="true" class="task-text" data-placeholder="Görev ekle..."></div></div>
+                <div class="task-row"><input type="checkbox" id="check_16"><div id="task_16" contenteditable="true" class="task-text" data-placeholder="Görev ekle..."></div></div>
+                <div class="task-row"><input type="checkbox" id="check_17"><div id="task_17" contenteditable="true" class="task-text" data-placeholder="Görev ekle..."></div></div>
+                <div class="task-row"><input type="checkbox" id="check_18"><div id="task_18" contenteditable="true" class="task-text" data-placeholder="Görev ekle..."></div></div>
+                <div class="task-row"><input type="checkbox" id="check_19"><div id="task_19" contenteditable="true" class="task-text" data-placeholder="Görev ekle..."></div></div>
             </div>
         </div>
 
         <div class="grid">
             <div class="day-card" id="cuma">
                 <h3>Cuma</h3>
-                <div class="task-row"><input type="checkbox"><div contenteditable="true" class="task-text" data-placeholder="Görev ekle..."></div></div>
-                <div class="task-row"><input type="checkbox"><div contenteditable="true" class="task-text" data-placeholder="Görev ekle..."></div></div>
-                <div class="task-row"><input type="checkbox"><div contenteditable="true" class="task-text" data-placeholder="Görev ekle..."></div></div>
-                <div class="task-row"><input type="checkbox"><div contenteditable="true" class="task-text" data-placeholder="Görev ekle..."></div></div>
-                <div class="task-row"><input type="checkbox"><div contenteditable="true" class="task-text" data-placeholder="Görev ekle..."></div></div>
+                <div class="task-row"><input type="checkbox" id="check_20"><div id="task_20" contenteditable="true" class="task-text" data-placeholder="Görev ekle..."></div></div>
+                <div class="task-row"><input type="checkbox" id="check_21"><div id="task_21" contenteditable="true" class="task-text" data-placeholder="Görev ekle..."></div></div>
+                <div class="task-row"><input type="checkbox" id="check_22"><div id="task_22" contenteditable="true" class="task-text" data-placeholder="Görev ekle..."></div></div>
+                <div class="task-row"><input type="checkbox" id="check_23"><div id="task_23" contenteditable="true" class="task-text" data-placeholder="Görev ekle..."></div></div>
+                <div class="task-row"><input type="checkbox" id="check_24"><div id="task_24" contenteditable="true" class="task-text" data-placeholder="Görev ekle..."></div></div>
             </div>
             <div class="day-card" id="cumartesi">
                 <h3>Cumartesi</h3>
-                <div class="task-row"><input type="checkbox"><div contenteditable="true" class="task-text" data-placeholder="Görev ekle..."></div></div>
-                <div class="task-row"><input type="checkbox"><div contenteditable="true" class="task-text" data-placeholder="Görev ekle..."></div></div>
-                <div class="task-row"><input type="checkbox"><div contenteditable="true" class="task-text" data-placeholder="Görev ekle..."></div></div>
-                <div class="task-row"><input type="checkbox"><div contenteditable="true" class="task-text" data-placeholder="Görev ekle..."></div></div>
-                <div class="task-row"><input type="checkbox"><div contenteditable="true" class="task-text" data-placeholder="Görev ekle..."></div></div>
+                <div class="task-row"><input type="checkbox" id="check_25"><div id="task_25" contenteditable="true" class="task-text" data-placeholder="Görev ekle..."></div></div>
+                <div class="task-row"><input type="checkbox" id="check_26"><div id="task_26" contenteditable="true" class="task-text" data-placeholder="Görev ekle..."></div></div>
+                <div class="task-row"><input type="checkbox" id="check_27"><div id="task_27" contenteditable="true" class="task-text" data-placeholder="Görev ekle..."></div></div>
+                <div class="task-row"><input type="checkbox" id="check_28"><div id="task_28" contenteditable="true" class="task-text" data-placeholder="Görev ekle..."></div></div>
+                <div class="task-row"><input type="checkbox" id="check_29"><div id="task_29" contenteditable="true" class="task-text" data-placeholder="Görev ekle..."></div></div>
             </div>
             <div class="day-card" id="pazar">
                 <h3>Pazar</h3>
-                <div class="task-row"><input type="checkbox"><div contenteditable="true" class="task-text" data-placeholder="Görev ekle..."></div></div>
-                <div class="task-row"><input type="checkbox"><div contenteditable="true" class="task-text" data-placeholder="Görev ekle..."></div></div>
-                <div class="task-row"><input type="checkbox"><div contenteditable="true" class="task-text" data-placeholder="Görev ekle..."></div></div>
-                <div class="task-row"><input type="checkbox"><div contenteditable="true" class="task-text" data-placeholder="Görev ekle..."></div></div>
-                <div class="task-row"><input type="checkbox"><div contenteditable="true" class="task-text" data-placeholder="Görev ekle..."></div></div>
+                <div class="task-row"><input type="checkbox" id="check_30"><div id="task_30" contenteditable="true" class="task-text" data-placeholder="Görev ekle..."></div></div>
+                <div class="task-row"><input type="checkbox" id="check_31"><div id="task_31" contenteditable="true" class="task-text" data-placeholder="Görev ekle..."></div></div>
+                <div class="task-row"><input type="checkbox" id="check_32"><div id="task_32" contenteditable="true" class="task-text" data-placeholder="Görev ekle..."></div></div>
+                <div class="task-row"><input type="checkbox" id="check_33"><div id="task_33" contenteditable="true" class="task-text" data-placeholder="Görev ekle..."></div></div>
+                <div class="task-row"><input type="checkbox" id="check_34"><div id="task_34" contenteditable="true" class="task-text" data-placeholder="Görev ekle..."></div></div>
             </div>
             
             <div class="notes-card" id="planner-notes">
                 <h3>NOTLAR</h3>
-                <div class="task-row"><input type="checkbox"><div contenteditable="true" class="task-text" data-placeholder="Haftalık hedef/not..."></div></div>
-                <div class="task-row"><input type="checkbox"><div contenteditable="true" class="task-text" data-placeholder="Haftalık hedef/not..."></div></div>
-                <div class="task-row"><input type="checkbox"><div contenteditable="true" class="task-text" data-placeholder="Haftalık hedef/not..."></div></div>
-                <div class="task-row"><input type="checkbox"><div contenteditable="true" class="task-text" data-placeholder="Haftalık hedef/not..."></div></div>
-                <div class="task-row"><input type="checkbox"><div contenteditable="true" class="task-text" data-placeholder="Haftalık hedef/not..."></div></div>
+                <div class="task-row"><input type="checkbox" id="check_35"><div id="task_35" contenteditable="true" class="task-text" data-placeholder="Haftalık hedef/not..."></div></div>
+                <div class="task-row"><input type="checkbox" id="check_36"><div id="task_36" contenteditable="true" class="task-text" data-placeholder="Haftalık hedef/not..."></div></div>
+                <div class="task-row"><input type="checkbox" id="check_37"><div id="task_37" contenteditable="true" class="task-text" data-placeholder="Haftalık hedef/not..."></div></div>
+                <div class="task-row"><input type="checkbox" id="check_38"><div id="task_38" contenteditable="true" class="task-text" data-placeholder="Haftalık hedef/not..."></div></div>
+                <div class="task-row"><input type="checkbox" id="check_39"><div id="task_39" contenteditable="true" class="task-text" data-placeholder="Haftalık hedef/not..."></div></div>
             </div>
         </div>
 
@@ -345,48 +248,59 @@
         </div>
         
         <div class="course-list">
-            
-            <details class="course-detail"><summary>Tarih</summary><div class="unit-container">
-                <details class="unit-details"><summary class="unit-summary">İslamiyet Öncesi Türk Tarihi</summary><div class="unit-content"><div class="quick-add-wrap"><input type="text" class="quick-add-input" id="input-tarih-1" placeholder="Yeni hap bilgi..."><button class="quick-add-btn" onclick="notEkle('tarih-1')">+</button><button class="btn-review" onclick="tekrarEt('tarih-1')">🔁 Tekrar</button></div><div class="notes-ul" id="list-tarih-1"></div></div></details>
-                <details class="unit-details"><summary class="unit-summary">İlk Türk - İslam Devletleri</summary><div class="unit-content"><div class="quick-add-wrap"><input type="text" class="quick-add-input" id="input-tarih-2" placeholder="Yeni hap bilgi..."><button class="quick-add-btn" onclick="notEkle('tarih-2')">+</button><button class="btn-review" onclick="tekrarEt('tarih-2')">🔁 Tekrar</button></div><div class="notes-ul" id="list-tarih-2"></div></div></details>
-                <details class="unit-details"><summary class="unit-summary">Osmanlı Devleti</summary><div class="unit-content"><div class="quick-add-wrap"><input type="text" class="quick-add-input" id="input-tarih-3" placeholder="Yeni hap bilgi..."><button class="quick-add-btn" onclick="notEkle('tarih-3')">+</button><button class="btn-review" onclick="tekrarEt('tarih-3')">🔁 Tekrar</button></div><div class="notes-ul" id="list-tarih-3"></div></div></details>
-                <details class="unit-details"><summary class="unit-summary">İnkılap Tarihi</summary><div class="unit-content"><div class="quick-add-wrap"><input type="text" class="quick-add-input" id="input-tarih-4" placeholder="Yeni hap bilgi..."><button class="quick-add-btn" onclick="notEkle('tarih-4')">+</button><button class="btn-review" onclick="tekrarEt('tarih-4')">🔁 Tekrar</button></div><div class="notes-ul" id="list-tarih-4"></div></div></details>
-                <details class="unit-details"><summary class="unit-summary">Çağdaş Türk ve Dünya</summary><div class="unit-content"><div class="quick-add-wrap"><input type="text" class="quick-add-input" id="input-tarih-5" placeholder="Yeni hap bilgi..."><button class="quick-add-btn" onclick="notEkle('tarih-5')">+</button><button class="btn-review" onclick="tekrarEt('tarih-5')">🔁 Tekrar</button></div><div class="notes-ul" id="list-tarih-5"></div></div></details>
-            </div></details>
-            
-            <details class="course-detail"><summary>Coğrafya</summary><div class="unit-container">
-                <details class="unit-details"><summary class="unit-summary">Fiziki Coğrafya</summary><div class="unit-content"><div class="quick-add-wrap"><input type="text" class="quick-add-input" id="input-cografya-1" placeholder="Yeni hap bilgi..."><button class="quick-add-btn" onclick="notEkle('cografya-1')">+</button><button class="btn-review" onclick="tekrarEt('cografya-1')">🔁 Tekrar</button></div><div class="notes-ul" id="list-cografya-1"></div></div></details>
-                <details class="unit-details"><summary class="unit-summary">Beşeri Coğrafya</summary><div class="unit-content"><div class="quick-add-wrap"><input type="text" class="quick-add-input" id="input-cografya-2" placeholder="Yeni hap bilgi..."><button class="quick-add-btn" onclick="notEkle('cografya-2')">+</button><button class="btn-review" onclick="tekrarEt('cografya-2')">🔁 Tekrar</button></div><div class="notes-ul" id="list-cografya-2"></div></div></details>
-                <details class="unit-details"><summary class="unit-summary">Ekonomik Coğrafya</summary><div class="unit-content"><div class="quick-add-wrap"><input type="text" class="quick-add-input" id="input-cografya-3" placeholder="Yeni hap bilgi..."><button class="quick-add-btn" onclick="notEkle('cografya-3')">+</button><button class="btn-review" onclick="tekrarEt('cografya-3')">🔁 Tekrar</button></div><div class="notes-ul" id="list-cografya-3"></div></div></details>
-            </div></details>
-            
-            <details class="course-detail"><summary>Vatandaşlık</summary><div class="unit-container">
-                <details class="unit-details"><summary class="unit-summary">Hukuk Temel Kavramlar</summary><div class="unit-content"><div class="quick-add-wrap"><input type="text" class="quick-add-input" id="input-vatandaslik-1" placeholder="Yeni hap bilgi..."><button class="quick-add-btn" onclick="notEkle('vatandaslik-1')">+</button><button class="btn-review" onclick="tekrarEt('vatandaslik-1')">🔁 Tekrar</button></div><div class="notes-ul" id="list-vatandaslik-1"></div></div></details>
-                <details class="unit-details"><summary class="unit-summary">Anayasa Hukuku</summary><div class="unit-content"><div class="quick-add-wrap"><input type="text" class="quick-add-input" id="input-vatandaslik-2" placeholder="Yeni hap bilgi..."><button class="quick-add-btn" onclick="notEkle('vatandaslik-2')">+</button><button class="btn-review" onclick="tekrarEt('vatandaslik-2')">🔁 Tekrar</button></div><div class="notes-ul" id="list-vatandaslik-2"></div></div></details>
-                <details class="unit-details"><summary class="unit-summary">İdare Hukuku</summary><div class="unit-content"><div class="quick-add-wrap"><input type="text" class="quick-add-input" id="input-vatandaslik-3" placeholder="Yeni hap bilgi..."><button class="quick-add-btn" onclick="notEkle('vatandaslik-3')">+</button><button class="btn-review" onclick="tekrarEt('vatandaslik-3')">🔁 Tekrar</button></div><div class="notes-ul" id="list-vatandaslik-3"></div></div></details>
-            </div></details>
-            
-            <details class="course-detail"><summary>Türkçe</summary><div class="unit-container">
-                <details class="unit-details"><summary class="unit-summary">Anlam Bilgisi</summary><div class="unit-content"><div class="quick-add-wrap"><input type="text" class="quick-add-input" id="input-turkce-1" placeholder="Yeni hap bilgi..."><button class="quick-add-btn" onclick="notEkle('turkce-1')">+</button><button class="btn-review" onclick="tekrarEt('turkce-1')">🔁 Tekrar</button></div><div class="notes-ul" id="list-turkce-1"></div></div></details>
-                <details class="unit-details"><summary class="unit-summary">Dil Bilgisi ve Yazım</summary><div class="unit-content"><div class="quick-add-wrap"><input type="text" class="quick-add-input" id="input-turkce-2" placeholder="Yeni hap bilgi..."><button class="quick-add-btn" onclick="notEkle('turkce-2')">+</button><button class="btn-review" onclick="tekrarEt('turkce-2')">🔁 Tekrar</button></div><div class="notes-ul" id="list-turkce-2"></div></div></details>
-                <details class="unit-details"><summary class="unit-summary">Sözel Mantık</summary><div class="unit-content"><div class="quick-add-wrap"><input type="text" class="quick-add-input" id="input-turkce-3" placeholder="Yeni hap bilgi..."><button class="quick-add-btn" onclick="notEkle('turkce-3')">+</button><button class="btn-review" onclick="tekrarEt('turkce-3')">🔁 Tekrar</button></div><div class="notes-ul" id="list-turkce-3"></div></div></details>
-            </div></details>
-            
-            <details class="course-detail"><summary>Matematik</summary><div class="unit-container">
-                <details class="unit-details"><summary class="unit-summary">Temel Kavramlar ve Cebir</summary><div class="unit-content"><div class="quick-add-wrap"><input type="text" class="quick-add-input" id="input-matematik-1" placeholder="Yeni hap bilgi..."><button class="quick-add-btn" onclick="notEkle('matematik-1')">+</button><button class="btn-review" onclick="tekrarEt('matematik-1')">🔁 Tekrar</button></div><div class="notes-ul" id="list-matematik-1"></div></div></details>
-                <details class="unit-details"><summary class="unit-summary">Problemler</summary><div class="unit-content"><div class="quick-add-wrap"><input type="text" class="quick-add-input" id="input-matematik-2" placeholder="Yeni hap bilgi..."><button class="quick-add-btn" onclick="notEkle('matematik-2')">+</button><button class="btn-review" onclick="tekrarEt('matematik-2')">🔁 Tekrar</button></div><div class="notes-ul" id="list-matematik-2"></div></div></details>
-                <details class="unit-details"><summary class="unit-summary">Geometri ve Sayısal Mantık</summary><div class="unit-content"><div class="quick-add-wrap"><input type="text" class="quick-add-input" id="input-matematik-3" placeholder="Yeni hap bilgi..."><button class="quick-add-btn" onclick="notEkle('matematik-3')">+</button><button class="btn-review" onclick="tekrarEt('matematik-3')">🔁 Tekrar</button></div><div class="notes-ul" id="list-matematik-3"></div></div></details>
-            </div></details>
-            
-            <details class="course-detail"><summary>Güncel Bilgiler</summary><div class="unit-container">
-                <details class="unit-details"><summary class="unit-summary">Türkiye ve Dünya Gündemi</summary><div class="unit-content"><div class="quick-add-wrap"><input type="text" class="quick-add-input" id="input-guncel-1" placeholder="Yeni hap bilgi..."><button class="quick-add-btn" onclick="notEkle('guncel-1')">+</button><button class="btn-review" onclick="tekrarEt('guncel-1')">🔁 Tekrar</button></div><div class="notes-ul" id="list-guncel-1"></div></div></details>
-                <details class="unit-details"><summary class="unit-summary">Uluslararası Kuruluşlar</summary><div class="unit-content"><div class="quick-add-wrap"><input type="text" class="quick-add-input" id="input-guncel-2" placeholder="Yeni hap bilgi..."><button class="quick-add-btn" onclick="notEkle('guncel-2')">+</button><button class="btn-review" onclick="tekrarEt('guncel-2')">🔁 Tekrar</button></div><div class="notes-ul" id="list-guncel-2"></div></div></details>
-            </div></details>
+            <details class="course-detail">
+                <summary>Tarih</summary>
+                <div class="unit-container">
+                    <details class="unit-details"><summary class="unit-summary">İslamiyet Öncesi Türk Tarihi</summary><div class="unit-content"><div class="quick-add-wrap"><input type="text" class="quick-add-input" id="input-tarih-1" placeholder="Yeni hap bilgi..."><button class="quick-add-btn" onclick="notEkle('tarih-1')">+</button><button class="btn-review" onclick="tekrarEt('tarih-1')">🔁 Tekrar</button></div><div class="notes-ul" id="list-tarih-1"></div></div></details>
+                    <details class="unit-details"><summary class="unit-summary">İlk Türk - İslam Devletleri</summary><div class="unit-content"><div class="quick-add-wrap"><input type="text" class="quick-add-input" id="input-tarih-2" placeholder="Yeni hap bilgi..."><button class="quick-add-btn" onclick="notEkle('tarih-2')">+</button><button class="btn-review" onclick="tekrarEt('tarih-2')">🔁 Tekrar</button></div><div class="notes-ul" id="list-tarih-2"></div></div></details>
+                    <details class="unit-details"><summary class="unit-summary">Osmanlı Devleti</summary><div class="unit-content"><div class="quick-add-wrap"><input type="text" class="quick-add-input" id="input-tarih-3" placeholder="Yeni hap bilgi..."><button class="quick-add-btn" onclick="notEkle('tarih-3')">+</button><button class="btn-review" onclick="tekrarEt('tarih-3')">🔁 Tekrar</button></div><div class="notes-ul" id="list-tarih-3"></div></div></details>
+                    <details class="unit-details"><summary class="unit-summary">İnkılap Tarihi</summary><div class="unit-content"><div class="quick-add-wrap"><input type="text" class="quick-add-input" id="input-tarih-4" placeholder="Yeni hap bilgi..."><button class="quick-add-btn" onclick="notEkle('tarih-4')">+</button><button class="btn-review" onclick="tekrarEt('tarih-4')">🔁 Tekrar</button></div><div class="notes-ul" id="list-tarih-4"></div></div></details>
+                    <details class="unit-details"><summary class="unit-summary">Çağdaş Türk ve Dünya</summary><div class="unit-content"><div class="quick-add-wrap"><input type="text" class="quick-add-input" id="input-tarih-5" placeholder="Yeni hap bilgi..."><button class="quick-add-btn" onclick="notEkle('tarih-5')">+</button><button class="btn-review" onclick="tekrarEt('tarih-5')">🔁 Tekrar</button></div><div class="notes-ul" id="list-tarih-5"></div></div></details>
+                </div>
+            </details>
+            <details class="course-detail">
+                <summary>Coğrafya</summary>
+                <div class="unit-container">
+                    <details class="unit-details"><summary class="unit-summary">Fiziki Coğrafya</summary><div class="unit-content"><div class="quick-add-wrap"><input type="text" class="quick-add-input" id="input-cografya-1" placeholder="Yeni hap bilgi..."><button class="quick-add-btn" onclick="notEkle('cografya-1')">+</button><button class="btn-review" onclick="tekrarEt('cografya-1')">🔁 Tekrar</button></div><div class="notes-ul" id="list-cografya-1"></div></div></details>
+                    <details class="unit-details"><summary class="unit-summary">Beşeri Coğrafya</summary><div class="unit-content"><div class="quick-add-wrap"><input type="text" class="quick-add-input" id="input-cografya-2" placeholder="Yeni hap bilgi..."><button class="quick-add-btn" onclick="notEkle('cografya-2')">+</button><button class="btn-review" onclick="tekrarEt('cografya-2')">🔁 Tekrar</button></div><div class="notes-ul" id="list-cografya-2"></div></div></details>
+                    <details class="unit-details"><summary class="unit-summary">Ekonomik Coğrafya</summary><div class="unit-content"><div class="quick-add-wrap"><input type="text" class="quick-add-input" id="input-cografya-3" placeholder="Yeni hap bilgi..."><button class="quick-add-btn" onclick="notEkle('cografya-3')">+</button><button class="btn-review" onclick="tekrarEt('cografya-3')">🔁 Tekrar</button></div><div class="notes-ul" id="list-cografya-3"></div></div></details>
+                </div>
+            </details>
+            <details class="course-detail">
+                <summary>Vatandaşlık</summary>
+                <div class="unit-container">
+                    <details class="unit-details"><summary class="unit-summary">Hukuk Temel Kavramlar</summary><div class="unit-content"><div class="quick-add-wrap"><input type="text" class="quick-add-input" id="input-vatandaslik-1" placeholder="Yeni hap bilgi..."><button class="quick-add-btn" onclick="notEkle('vatandaslik-1')">+</button><button class="btn-review" onclick="tekrarEt('vatandaslik-1')">🔁 Tekrar</button></div><div class="notes-ul" id="list-vatandaslik-1"></div></div></details>
+                    <details class="unit-details"><summary class="unit-summary">Anayasa Hukuku</summary><div class="unit-content"><div class="quick-add-wrap"><input type="text" class="quick-add-input" id="input-vatandaslik-2" placeholder="Yeni hap bilgi..."><button class="quick-add-btn" onclick="notEkle('vatandaslik-2')">+</button><button class="btn-review" onclick="tekrarEt('vatandaslik-2')">🔁 Tekrar</button></div><div class="notes-ul" id="list-vatandaslik-2"></div></div></details>
+                    <details class="unit-details"><summary class="unit-summary">İdare Hukuku</summary><div class="unit-content"><div class="quick-add-wrap"><input type="text" class="quick-add-input" id="input-vatandaslik-3" placeholder="Yeni hap bilgi..."><button class="quick-add-btn" onclick="notEkle('vatandaslik-3')">+</button><button class="btn-review" onclick="tekrarEt('vatandaslik-3')">🔁 Tekrar</button></div><div class="notes-ul" id="list-vatandaslik-3"></div></div></details>
+                </div>
+            </details>
+            <details class="course-detail">
+                <summary>Türkçe</summary>
+                <div class="unit-container">
+                    <details class="unit-details"><summary class="unit-summary">Anlam Bilgisi</summary><div class="unit-content"><div class="quick-add-wrap"><input type="text" class="quick-add-input" id="input-turkce-1" placeholder="Yeni hap bilgi..."><button class="quick-add-btn" onclick="notEkle('turkce-1')">+</button><button class="btn-review" onclick="tekrarEt('turkce-1')">🔁 Tekrar</button></div><div class="notes-ul" id="list-turkce-1"></div></div></details>
+                    <details class="unit-details"><summary class="unit-summary">Dil Bilgisi ve Yazım</summary><div class="unit-content"><div class="quick-add-wrap"><input type="text" class="quick-add-input" id="input-turkce-2" placeholder="Yeni hap bilgi..."><button class="quick-add-btn" onclick="notEkle('turkce-2')">+</button><button class="btn-review" onclick="tekrarEt('turkce-2')">🔁 Tekrar</button></div><div class="notes-ul" id="list-turkce-2"></div></div></details>
+                    <details class="unit-details"><summary class="unit-summary">Sözel Mantık</summary><div class="unit-content"><div class="quick-add-wrap"><input type="text" class="quick-add-input" id="input-turkce-3" placeholder="Yeni hap bilgi..."><button class="quick-add-btn" onclick="notEkle('turkce-3')">+</button><button class="btn-review" onclick="tekrarEt('turkce-3')">🔁 Tekrar</button></div><div class="notes-ul" id="list-turkce-3"></div></div></details>
+                </div>
+            </details>
+            <details class="course-detail">
+                <summary>Matematik</summary>
+                <div class="unit-container">
+                    <details class="unit-details"><summary class="unit-summary">Temel Kavramlar ve Cebir</summary><div class="unit-content"><div class="quick-add-wrap"><input type="text" class="quick-add-input" id="input-matematik-1" placeholder="Yeni hap bilgi..."><button class="quick-add-btn" onclick="notEkle('matematik-1')">+</button><button class="btn-review" onclick="tekrarEt('matematik-1')">🔁 Tekrar</button></div><div class="notes-ul" id="list-matematik-1"></div></div></details>
+                    <details class="unit-details"><summary class="unit-summary">Problemler</summary><div class="unit-content"><div class="quick-add-wrap"><input type="text" class="quick-add-input" id="input-matematik-2" placeholder="Yeni hap bilgi..."><button class="quick-add-btn" onclick="notEkle('matematik-2')">+</button><button class="btn-review" onclick="tekrarEt('matematik-2')">🔁 Tekrar</button></div><div class="notes-ul" id="list-matematik-2"></div></div></details>
+                    <details class="unit-details"><summary class="unit-summary">Geometri ve Sayısal Mantık</summary><div class="unit-content"><div class="quick-add-wrap"><input type="text" class="quick-add-input" id="input-matematik-3" placeholder="Yeni hap bilgi..."><button class="quick-add-btn" onclick="notEkle('matematik-3')">+</button><button class="btn-review" onclick="tekrarEt('matematik-3')">🔁 Tekrar</button></div><div class="notes-ul" id="list-matematik-3"></div></div></details>
+                </div>
+            </details>
+            <details class="course-detail">
+                <summary>Güncel Bilgiler</summary>
+                <div class="unit-container">
+                    <details class="unit-details"><summary class="unit-summary">Türkiye ve Dünya Gündemi</summary><div class="unit-content"><div class="quick-add-wrap"><input type="text" class="quick-add-input" id="input-guncel-1" placeholder="Yeni hap bilgi..."><button class="quick-add-btn" onclick="notEkle('guncel-1')">+</button><button class="btn-review" onclick="tekrarEt('guncel-1')">🔁 Tekrar</button></div><div class="notes-ul" id="list-guncel-1"></div></div></details>
+                    <details class="unit-details"><summary class="unit-summary">Uluslararası Kuruluşlar</summary><div class="unit-content"><div class="quick-add-wrap"><input type="text" class="quick-add-input" id="input-guncel-2" placeholder="Yeni hap bilgi..."><button class="quick-add-btn" onclick="notEkle('guncel-2')">+</button><button class="btn-review" onclick="tekrarEt('guncel-2')">🔁 Tekrar</button></div><div class="notes-ul" id="list-guncel-2"></div></div></details>
+                </div>
+            </details>
         </div>
     </div>
 </div>
 
-<!-- YENİ: TEKRAR ET (FLASHCARD) POP-UP EKRANI -->
 <div id="review-modal" class="modal-overlay">
     <div class="modal-content">
         <button class="modal-close" onclick="kapatTekrar()">✖</button>
@@ -403,6 +317,27 @@
 </div>
 
 <script>
+    // ==========================================
+    // 1. FIREBASE BAĞLANTI AYARLARINI BURAYA YAPIŞTIR
+    // ==========================================
+    const firebaseConfig = {
+      apiKey: "AIzaSyDEKnJplvCwilJeuh8Kz_avfnio97hxd5A",
+      authDomain: "kpss-planlayici-f4876.firebaseapp.com",
+      databaseURL: "https://kpss-planlayici-f4876-default-rtdb.europe-west1.firebasedatabase.app",
+      projectId: "kpss-planlayici-f4876",
+      storageBucket: "kpss-planlayici-f4876.firebasestorage.app",
+      messagingSenderId: "613831557767",
+      appId: "1:613831557767:web:28487f99370976da466e22",
+      measurementId: "G-8GQV4HGCB7"
+    };
+
+    // Firebase'i Başlat
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    // ==========================================
+    // TEMA & SAAT AYARLARI (Cihaz bazlı kalacak)
+    // ==========================================
     function sayfaDegistir(viewId) {
         document.querySelectorAll('.view-section').forEach(section => section.classList.remove('active'));
         document.getElementById(viewId).classList.add('active');
@@ -432,45 +367,76 @@
     function saatVeTarihiGuncelle() {
         const simdi = new Date();
         const secenekler = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-        const tarihStr = simdi.toLocaleDateString('tr-TR', secenekler);
         const display = document.getElementById('real-time-display');
-        if(display) { display.innerText = `${tarihStr} - ${simdi.toLocaleTimeString('tr-TR')}`; }
+        if(display) { display.innerText = `${simdi.toLocaleDateString('tr-TR', secenekler)} - ${simdi.toLocaleTimeString('tr-TR')}`; }
     }
 
-    // --- GENEL KAYIT SİSTEMİ ---
+    // ==========================================
+    // FIREBASE VERİ OKUMA / YAZMA İŞLEMLERİ
+    // ==========================================
     document.addEventListener('DOMContentLoaded', () => {
-        sayaciGuncelle();
-        saatVeTarihiGuncelle();
+        sayaciGuncelle(); saatVeTarihiGuncelle();
         setInterval(sayaciGuncelle, 1000 * 60 * 60 * 24);
         setInterval(saatVeTarihiGuncelle, 1000); 
 
-        const taskTexts = document.querySelectorAll('.task-text');
-        taskTexts.forEach((div, i) => {
-            div.innerText = localStorage.getItem(`kpss_task_${i}`) || "";
-            div.oninput = () => localStorage.setItem(`kpss_task_${i}`, div.innerText);
-        });
+        // Firebase'den Tüm Verileri Çek ve Ekrana Bas
+        db.ref('kpss_data').once('value').then((snapshot) => {
+            const data = snapshot.val() || {};
 
-        const checkboxes = document.querySelectorAll('input[type="checkbox"]');
-        checkboxes.forEach((cb, i) => {
-            cb.checked = localStorage.getItem(`kpss_check_${i}`) === 'true';
-            cb.onchange = () => localStorage.setItem(`kpss_check_${i}`, cb.checked);
-        });
+            // 1. Planlayıcı Taskları
+            document.querySelectorAll('.task-text').forEach((div, i) => {
+                if(data[`task_${i}`]) div.innerText = data[`task_${i}`];
+                
+                // Değişiklik olunca Firebase'e kaydet
+                div.addEventListener('input', () => {
+                    db.ref('kpss_data/task_' + i).set(div.innerText);
+                });
+            });
 
-        document.querySelectorAll('.quick-add-input').forEach(input => {
-            const unitId = input.id.replace('input-', '');
-            const saved = JSON.parse(localStorage.getItem(`kpss_notes_list_${unitId}`) || "[]");
-            saved.forEach(text => ekrandaNotOlustur(unitId, text));
-            input.onkeypress = (e) => { if(e.key === 'Enter') notEkle(unitId); };
+            // 2. Checkboxlar
+            document.querySelectorAll('input[type="checkbox"]').forEach((cb, i) => {
+                if(data[`check_${i}`]) cb.checked = data[`check_${i}`];
+                
+                cb.addEventListener('change', () => {
+                    db.ref('kpss_data/check_' + i).set(cb.checked);
+                });
+            });
+
+            // 3. Tekrar Notları
+            document.querySelectorAll('.quick-add-input').forEach(input => {
+                const unitId = input.id.replace('input-', '');
+                const savedNotes = data[`notes_${unitId}`] || [];
+                
+                // Kayıtlı notları ekrana çiz
+                savedNotes.forEach(text => ekrandaNotOlustur(unitId, text));
+                
+                // Yeni not ekleme olayı
+                input.onkeypress = (e) => { 
+                    if(e.key === 'Enter') notEkle(unitId); 
+                };
+            });
+
+            // Yükleme ekranını kapat
+            document.getElementById('loading-overlay').style.opacity = '0';
+            setTimeout(() => document.getElementById('loading-overlay').style.display = 'none', 500);
+
+        }).catch((error) => {
+            console.error("Veritabanına bağlanılamadı:", error);
+            alert("Veritabanına bağlanılamadı. Lütfen Firebase ayarlarınızı kontrol edin.");
         });
     });
 
-    // --- HAP BİLGİ İŞLEMLERİ ---
+    // --- HAP BİLGİ İŞLEMLERİ (FIREBASE UYUMLU) ---
     function ekrandaNotOlustur(unitId, text) {
         const list = document.getElementById(`list-${unitId}`);
         const div = document.createElement('div');
         div.className = 'note-item';
         div.innerHTML = `<div class="note-content" contenteditable="true">${text}</div><button class="note-delete" onclick="this.parentElement.remove(); notlariKaydet('${unitId}');">✖</button>`;
-        div.querySelector('.note-content').oninput = () => notlariKaydet(unitId);
+        
+        div.querySelector('.note-content').addEventListener('input', () => {
+            notlariKaydet(unitId);
+        });
+        
         list.appendChild(div);
     }
 
@@ -485,27 +451,28 @@
 
     function notlariKaydet(unitId) {
         const notes = Array.from(document.querySelectorAll(`#list-${unitId} .note-content`)).map(el => el.innerText);
-        localStorage.setItem(`kpss_notes_list_${unitId}`, JSON.stringify(notes));
+        db.ref('kpss_data/notes_' + unitId).set(notes);
     }
 
     function haftayiTemizle() {
         if(confirm("Tüm haftalık planı ve işaretleri silmek istediğine emin misin?")) {
+            // Planları ekrandan temizle ve veritabanından sil
             document.querySelectorAll('.task-text').forEach((div, i) => {
                 if(div.closest('.view-section').id === 'planner-view'){
                     div.innerText = "";
-                    localStorage.removeItem(`kpss_task_${i}`);
+                    db.ref('kpss_data/task_' + i).remove();
                 }
             });
             document.querySelectorAll('input[type="checkbox"]').forEach((cb, i) => {
                 if(cb.closest('.view-section').id === 'planner-view'){
                     cb.checked = false;
-                    localStorage.removeItem(`kpss_check_${i}`);
+                    db.ref('kpss_data/check_' + i).remove();
                 }
             });
         }
     }
 
-    // --- YENİ: POP-UP TEKRAR (FLASHCARD) SİSTEMİ İŞLEVLERİ ---
+    // --- POP-UP TEKRAR SİSTEMİ ---
     let mevcutTekrarNotlari = [];
     let mevcutNotIndeksi = 0;
 
@@ -513,16 +480,13 @@
         const listContainer = document.getElementById(`list-${unitId}`);
         const notesElements = listContainer.querySelectorAll('.note-content');
         
-        mevcutTekrarNotlari = Array.from(notesElements)
-                                   .map(el => el.innerText.trim())
-                                   .filter(text => text !== '');
+        mevcutTekrarNotlari = Array.from(notesElements).map(el => el.innerText.trim()).filter(text => text !== '');
 
         if(mevcutTekrarNotlari.length === 0) {
             alert("Bu ünitede tekrar edilecek hap bilgi bulunmuyor. Lütfen önce not ekleyin.");
             return;
         }
 
-        // Ünite başlığını yakala ve popup'a yazdır
         const unitSummary = listContainer.parentElement.previousElementSibling;
         const unitName = unitSummary ? unitSummary.innerText.replace('▼', '').trim() : 'Tekrar Modu';
         document.getElementById('modal-unit-title').innerText = unitName;
@@ -535,35 +499,17 @@
     function tekrarArayuzunuGuncelle() {
         document.getElementById('modal-note-text').innerText = mevcutTekrarNotlari[mevcutNotIndeksi];
         document.getElementById('modal-progress').innerText = `${mevcutNotIndeksi + 1} / ${mevcutTekrarNotlari.length}`;
-        
         document.getElementById('btn-prev-note').disabled = mevcutNotIndeksi === 0;
         document.getElementById('btn-next-note').disabled = mevcutNotIndeksi === mevcutTekrarNotlari.length - 1;
     }
 
-    function oncekiNot() {
-        if(mevcutNotIndeksi > 0) {
-            mevcutNotIndeksi--;
-            tekrarArayuzunuGuncelle();
-        }
-    }
-
-    function sonrakiNot() {
-        if(mevcutNotIndeksi < mevcutTekrarNotlari.length - 1) {
-            mevcutNotIndeksi++;
-            tekrarArayuzunuGuncelle();
-        }
-    }
-
-    function kapatTekrar() {
-        document.getElementById('review-modal').style.display = 'none';
-    }
-
-    // Pop-up'ın dışındaki siyah alana tıklayınca pencerenin kapanmasını sağlar
+    function oncekiNot() { if(mevcutNotIndeksi > 0) { mevcutNotIndeksi--; tekrarArayuzunuGuncelle(); } }
+    function sonrakiNot() { if(mevcutNotIndeksi < mevcutTekrarNotlari.length - 1) { mevcutNotIndeksi++; tekrarArayuzunuGuncelle(); } }
+    function kapatTekrar() { document.getElementById('review-modal').style.display = 'none'; }
+    
     window.onclick = function(event) {
         const modal = document.getElementById('review-modal');
-        if (event.target === modal) {
-            kapatTekrar();
-        }
+        if (event.target === modal) kapatTekrar();
     }
 </script>
 </body>
