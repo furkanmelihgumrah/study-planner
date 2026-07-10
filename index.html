@@ -4,8 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>KPSS Haftalık Plan & Tekrar Notları</title>
-    <link rel="icon" type="image/png" href="goal.png">
-
     
     <!-- Firebase Kütüphaneleri -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
@@ -111,7 +109,6 @@
         .unit-details[open] .unit-summary { border-bottom: 1px solid var(--input-border); }
         .unit-content { padding: 15px; }
         
-        /* GÜNCELLENEN: Aksiyon Kutuları (Mobil uyum için) */
         .unit-actions { display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap; }
         .quick-add-wrap { display: flex; flex-grow: 1; background-color: var(--container-bg); border: 1px solid var(--input-border); border-radius: 8px; overflow: hidden; min-width: 200px; }
         .quick-add-input { flex-grow: 1; border: none; padding: 10px 15px; font-size: 14px; font-family: 'Roboto', sans-serif; background: transparent; color: var(--text-color); outline: none; }
@@ -138,7 +135,6 @@
         .modal-footer { display: flex; justify-content: space-between; align-items: center; padding: 15px 25px; border-top: 1px solid var(--input-border); background-color: var(--note-bg); border-radius: 0 0 12px 12px; }
         #modal-progress { font-size: 18px; font-weight: bold; font-family: 'Oswald', sans-serif; color: var(--btn-blue); }
 
-        /* MOBİL UYUM (YENİLENEN KISIM) */
         @media (max-width: 900px) {
             body { height: auto; overflow: auto; padding: 10px; }
             .container { padding: 15px; }
@@ -148,11 +144,11 @@
         }
 
         @media (max-width: 600px) {
-            .grid { grid-template-columns: 1fr; } /* Günleri alt alta dizer */
+            .grid { grid-template-columns: 1fr; }
             .header h1 { font-size: 28px; text-align: center; }
             .btn-custom { padding: 10px 15px; font-size: 14px; flex-grow: 1; }
             .datetime-display { width: 100%; padding: 10px; font-size: 13px; }
-            .unit-actions { flex-direction: column; } /* Tekrar butonunu telefonda aşağı atar */
+            .unit-actions { flex-direction: column; } 
             .btn-review { width: 100%; padding: 12px; font-size: 16px; }
             .modal-body { padding: 20px; }
             #modal-note-text { font-size: 20px; }
@@ -265,44 +261,108 @@
         </div>
         
         <div class="course-list">
-            <!-- TARİH -->
-            <details class="course-detail"><summary>Tarih</summary><div class="unit-container">
-                <details class="unit-details"><summary class="unit-summary">İslamiyet Öncesi Türk Tarihi</summary><div class="unit-content">
-                    <div class="unit-actions">
-                        <div class="quick-add-wrap"><input type="text" class="quick-add-input" id="input-tarih-1" placeholder="Yeni hap bilgi..."><button class="quick-add-btn" onclick="notEkle('tarih-1')">+</button></div>
-                        <button class="btn-review" onclick="tekrarEt('tarih-1')">🔁 Tekrar</button>
-                    </div>
-                    <div class="notes-ul" id="list-tarih-1"></div>
-                </div></details>
-                <details class="unit-details"><summary class="unit-summary">İlk Türk - İslam Devletleri</summary><div class="unit-content">
-                    <div class="unit-actions">
-                        <div class="quick-add-wrap"><input type="text" class="quick-add-input" id="input-tarih-2" placeholder="Yeni hap bilgi..."><button class="quick-add-btn" onclick="notEkle('tarih-2')">+</button></div>
-                        <button class="btn-review" onclick="tekrarEt('tarih-2')">🔁 Tekrar</button>
-                    </div>
-                    <div class="notes-ul" id="list-tarih-2"></div>
-                </div></details>
-                <details class="unit-details"><summary class="unit-summary">Osmanlı Devleti</summary><div class="unit-content">
-                    <div class="unit-actions">
-                        <div class="quick-add-wrap"><input type="text" class="quick-add-input" id="input-tarih-3" placeholder="Yeni hap bilgi..."><button class="quick-add-btn" onclick="notEkle('tarih-3')">+</button></div>
-                        <button class="btn-review" onclick="tekrarEt('tarih-3')">🔁 Tekrar</button>
-                    </div>
-                    <div class="notes-ul" id="list-tarih-3"></div>
-                </div></details>
-                <details class="unit-details"><summary class="unit-summary">İnkılap Tarihi</summary><div class="unit-content">
-                    <div class="unit-actions">
-                        <div class="quick-add-wrap"><input type="text" class="quick-add-input" id="input-tarih-4" placeholder="Yeni hap bilgi..."><button class="quick-add-btn" onclick="notEkle('tarih-4')">+</button></div>
-                        <button class="btn-review" onclick="tekrarEt('tarih-4')">🔁 Tekrar</button>
-                    </div>
-                    <div class="notes-ul" id="list-tarih-4"></div>
-                </div></details>
-                <details class="unit-details"><summary class="unit-summary">Çağdaş Türk ve Dünya</summary><div class="unit-content">
-                    <div class="unit-actions">
-                        <div class="quick-add-wrap"><input type="text" class="quick-add-input" id="input-tarih-5" placeholder="Yeni hap bilgi..."><button class="quick-add-btn" onclick="notEkle('tarih-5')">+</button></div>
-                        <button class="btn-review" onclick="tekrarEt('tarih-5')">🔁 Tekrar</button>
-                    </div>
-                    <div class="notes-ul" id="list-tarih-5"></div>
-                </div></details>
-            </div></details>
+            
+            <!-- TARİH BÖLÜMÜ YENİ ALT BAŞLIKLARLA -->
+            <details class="course-detail">
+                <summary>Tarih</summary>
+                <div class="unit-container">
+                    <details class="unit-details"><summary class="unit-summary">İslamiyet Öncesi Türk Tarihi</summary><div class="unit-content">
+                        <div class="unit-actions">
+                            <div class="quick-add-wrap"><input type="text" class="quick-add-input" id="input-tarih-1" placeholder="Yeni hap bilgi..."><button class="quick-add-btn" onclick="notEkle('tarih-1')">+</button></div>
+                            <button class="btn-review" onclick="tekrarEt('tarih-1')">🔁 Tekrar</button>
+                        </div>
+                        <div class="notes-ul" id="list-tarih-1"></div>
+                    </div></details>
+                    
+                    <details class="unit-details"><summary class="unit-summary">İlk Türk - İslam Devletleri</summary><div class="unit-content">
+                        <div class="unit-actions">
+                            <div class="quick-add-wrap"><input type="text" class="quick-add-input" id="input-tarih-2" placeholder="Yeni hap bilgi..."><button class="quick-add-btn" onclick="notEkle('tarih-2')">+</button></div>
+                            <button class="btn-review" onclick="tekrarEt('tarih-2')">🔁 Tekrar</button>
+                        </div>
+                        <div class="notes-ul" id="list-tarih-2"></div>
+                    </div></details>
+                    
+                    <details class="unit-details"><summary class="unit-summary">Osmanlı Kültür ve Medeniyeti</summary><div class="unit-content">
+                        <div class="unit-actions">
+                            <div class="quick-add-wrap"><input type="text" class="quick-add-input" id="input-tarih-3" placeholder="Yeni hap bilgi..."><button class="quick-add-btn" onclick="notEkle('tarih-3')">+</button></div>
+                            <button class="btn-review" onclick="tekrarEt('tarih-3')">🔁 Tekrar</button>
+                        </div>
+                        <div class="notes-ul" id="list-tarih-3"></div>
+                    </div></details>
+                    
+                    <details class="unit-details"><summary class="unit-summary">Osmanlı Devleti - Kuruluş</summary><div class="unit-content">
+                        <div class="unit-actions">
+                            <div class="quick-add-wrap"><input type="text" class="quick-add-input" id="input-tarih-4" placeholder="Yeni hap bilgi..."><button class="quick-add-btn" onclick="notEkle('tarih-4')">+</button></div>
+                            <button class="btn-review" onclick="tekrarEt('tarih-4')">🔁 Tekrar</button>
+                        </div>
+                        <div class="notes-ul" id="list-tarih-4"></div>
+                    </div></details>
+                    
+                    <details class="unit-details"><summary class="unit-summary">Osmanlı Devleti - Yükselme</summary><div class="unit-content">
+                        <div class="unit-actions">
+                            <div class="quick-add-wrap"><input type="text" class="quick-add-input" id="input-tarih-5" placeholder="Yeni hap bilgi..."><button class="quick-add-btn" onclick="notEkle('tarih-5')">+</button></div>
+                            <button class="btn-review" onclick="tekrarEt('tarih-5')">🔁 Tekrar</button>
+                        </div>
+                        <div class="notes-ul" id="list-tarih-5"></div>
+                    </div></details>
+                    
+                    <details class="unit-details"><summary class="unit-summary">Osmanlı Devleti - Duraklama</summary><div class="unit-content">
+                        <div class="unit-actions">
+                            <div class="quick-add-wrap"><input type="text" class="quick-add-input" id="input-tarih-6" placeholder="Yeni hap bilgi..."><button class="quick-add-btn" onclick="notEkle('tarih-6')">+</button></div>
+                            <button class="btn-review" onclick="tekrarEt('tarih-6')">🔁 Tekrar</button>
+                        </div>
+                        <div class="notes-ul" id="list-tarih-6"></div>
+                    </div></details>
+                    
+                    <details class="unit-details"><summary class="unit-summary">Osmanlı Devleti - Gerileme</summary><div class="unit-content">
+                        <div class="unit-actions">
+                            <div class="quick-add-wrap"><input type="text" class="quick-add-input" id="input-tarih-7" placeholder="Yeni hap bilgi..."><button class="quick-add-btn" onclick="notEkle('tarih-7')">+</button></div>
+                            <button class="btn-review" onclick="tekrarEt('tarih-7')">🔁 Tekrar</button>
+                        </div>
+                        <div class="notes-ul" id="list-tarih-7"></div>
+                    </div></details>
+                    
+                    <details class="unit-details"><summary class="unit-summary">Osmanlı Devleti - Dağılma</summary><div class="unit-content">
+                        <div class="unit-actions">
+                            <div class="quick-add-wrap"><input type="text" class="quick-add-input" id="input-tarih-8" placeholder="Yeni hap bilgi..."><button class="quick-add-btn" onclick="notEkle('tarih-8')">+</button></div>
+                            <button class="btn-review" onclick="tekrarEt('tarih-8')">🔁 Tekrar</button>
+                        </div>
+                        <div class="notes-ul" id="list-tarih-8"></div>
+                    </div></details>
+                    
+                    <details class="unit-details"><summary class="unit-summary">XIX. Yüzyıl Islahatları</summary><div class="unit-content">
+                        <div class="unit-actions">
+                            <div class="quick-add-wrap"><input type="text" class="quick-add-input" id="input-tarih-9" placeholder="Yeni hap bilgi..."><button class="quick-add-btn" onclick="notEkle('tarih-9')">+</button></div>
+                            <button class="btn-review" onclick="tekrarEt('tarih-9')">🔁 Tekrar</button>
+                        </div>
+                        <div class="notes-ul" id="list-tarih-9"></div>
+                    </div></details>
+                    
+                    <details class="unit-details"><summary class="unit-summary">XX. Yüzyıl Başlarında Osmanlı</summary><div class="unit-content">
+                        <div class="unit-actions">
+                            <div class="quick-add-wrap"><input type="text" class="quick-add-input" id="input-tarih-10" placeholder="Yeni hap bilgi..."><button class="quick-add-btn" onclick="notEkle('tarih-10')">+</button></div>
+                            <button class="btn-review" onclick="tekrarEt('tarih-10')">🔁 Tekrar</button>
+                        </div>
+                        <div class="notes-ul" id="list-tarih-10"></div>
+                    </div></details>
+                    
+                    <details class="unit-details"><summary class="unit-summary">İnkılap Tarihi ve Atatürk Dönemi</summary><div class="unit-content">
+                        <div class="unit-actions">
+                            <div class="quick-add-wrap"><input type="text" class="quick-add-input" id="input-tarih-11" placeholder="Yeni hap bilgi..."><button class="quick-add-btn" onclick="notEkle('tarih-11')">+</button></div>
+                            <button class="btn-review" onclick="tekrarEt('tarih-11')">🔁 Tekrar</button>
+                        </div>
+                        <div class="notes-ul" id="list-tarih-11"></div>
+                    </div></details>
+                    
+                    <details class="unit-details"><summary class="unit-summary">Çağdaş Türk ve Dünya Tarihi</summary><div class="unit-content">
+                        <div class="unit-actions">
+                            <div class="quick-add-wrap"><input type="text" class="quick-add-input" id="input-tarih-12" placeholder="Yeni hap bilgi..."><button class="quick-add-btn" onclick="notEkle('tarih-12')">+</button></div>
+                            <button class="btn-review" onclick="tekrarEt('tarih-12')">🔁 Tekrar</button>
+                        </div>
+                        <div class="notes-ul" id="list-tarih-12"></div>
+                    </div></details>
+                </div>
+            </details>
             
             <!-- COĞRAFYA -->
             <details class="course-detail"><summary>Coğrafya</summary><div class="unit-container">
@@ -579,7 +639,6 @@
             return;
         }
 
-        // Açılır kapanır kutunun başlığını alma (Mantık düzeltildi)
         const detailsBox = listContainer.closest('.unit-details');
         const unitName = detailsBox ? detailsBox.querySelector('.unit-summary').innerText.replace('▼', '').trim() : 'Tekrar Modu';
         document.getElementById('modal-unit-title').innerText = unitName;
