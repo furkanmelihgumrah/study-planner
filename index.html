@@ -75,7 +75,6 @@
         .day-card, #planner-notes { background-color: var(--day-card-bg); color: var(--day-card-text); }
         .notes-card { background-color: var(--note-bg); }
 
-        /* Genel Kaydırma Çubuğu Stilleri */
         ::-webkit-scrollbar { width: 8px; height: 8px; }
         ::-webkit-scrollbar-track { background: var(--scrollbar-track); border-radius: 4px; }
         ::-webkit-scrollbar-thumb { background: var(--scrollbar-thumb); border-radius: 4px; }
@@ -101,7 +100,6 @@
         
         .unit-container { padding: 15px; background-color: var(--note-bg); display: flex; flex-direction: column; gap: 15px; }
         
-        /* GÜNCELLENEN: Yeni Geniş Not Ekleme Arayüzü */
         .unit-actions { display: flex; flex-direction: column; gap: 10px; margin-bottom: 15px; }
         .add-note-box { background-color: var(--container-bg); border: 1px solid var(--input-border); border-radius: 8px; padding: 10px; display: flex; flex-direction: column; gap: 10px; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02); }
         .quick-add-input { width: 100%; min-height: 60px; border: none; resize: vertical; font-family: 'Roboto', sans-serif; font-size: 14.5px; line-height: 1.5; background: transparent; color: var(--text-color); outline: none; }
@@ -109,11 +107,9 @@
         .quick-add-btn { background-color: var(--btn-blue); color: white; border: none; padding: 8px 25px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 14px; transition: 0.2s; }
         .quick-add-btn:hover { background-color: #0b5ed7; transform: translateY(-1px); }
         
-        /* Büyük Tekrar Butonu */
         .btn-review { background-color: #198754; color: white; border: none; padding: 12px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 16px; text-align: center; display: block; width: 100%; box-shadow: 0 2px 4px rgba(0,0,0,0.1); transition: 0.2s; }
         .btn-review:hover { background-color: #157347; transform: translateY(-1px); }
         
-        /* GÜNCELLENEN: Eşit Boyutlu Not Kartları ve İç Kaydırma */
         .notes-ul { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 15px; }
         .note-item { 
             background-color: var(--note-item-bg); 
@@ -123,7 +119,7 @@
             border-radius: 8px; 
             display: flex; 
             flex-direction: column;
-            height: 160px; /* Kartların boyutu sabitlendi */
+            height: 160px; 
             box-shadow: 0 2px 4px rgba(0,0,0,0.02); 
             transition: transform 0.2s, box-shadow 0.2s; 
             box-sizing: border-box; 
@@ -137,11 +133,10 @@
             line-height: 1.5; 
             word-break: break-word; 
             color: var(--text-color); 
-            overflow-y: auto; /* Yazı taşarsa kendi içinde kaydırma çubuğu çıkar */
+            overflow-y: auto; 
             padding-right: 5px; 
             margin-bottom: 5px;
         }
-        /* Karta özel ince scrollbar */
         .note-content::-webkit-scrollbar { width: 4px; }
         .note-content::-webkit-scrollbar-thumb { background-color: var(--input-border); border-radius: 4px; }
 
@@ -275,7 +270,7 @@
         <button class="btn-clear" onclick="haftayiTemizle()">Tüm Haftayı Temizle</button>
     </div>
 
-    <!-- 2. GÖRÜNÜM: TEKRAR NOTLARI (Üniteler Kaldırıldı) -->
+    <!-- 2. GÖRÜNÜM: TEKRAR NOTLARI -->
     <div id="notes-view" class="view-section">
         <div class="header">
             <h1>TEKRAR NOTLARIM (ÖNLİSANS)</h1>
@@ -285,7 +280,6 @@
         </div>
         
         <div class="course-list">
-            
             <!-- TARİH -->
             <details class="course-detail">
                 <summary>Tarih</summary>
@@ -466,30 +460,6 @@
         db.ref('kpss_data').once('value').then((snapshot) => {
             const data = snapshot.val() || {};
 
-            // Eski ünite notlarını ana ders başlığına aktarma sistemi
-            const courses = ['tarih', 'cografya', 'vatandaslik', 'turkce', 'matematik', 'guncel'];
-            courses.forEach(course => {
-                let combinedOldNotes = [];
-                let needsMigration = false;
-                
-                // Eski 12 üniteye kadar tarama
-                for(let j=1; j<=12; j++) {
-                    let oldKey = `notes_${course}-${j}`;
-                    if(data[oldKey]) {
-                        needsMigration = true;
-                        combinedOldNotes = combinedOldNotes.concat(data[oldKey]);
-                        db.ref('kpss_data/' + oldKey).remove(); // Eski veriyi temizle
-                    }
-                }
-                
-                let currentNotes = data[`notes_${course}`] || [];
-                if(needsMigration) {
-                    currentNotes = [...currentNotes, ...combinedOldNotes];
-                    data[`notes_${course}`] = currentNotes;
-                    db.ref('kpss_data/notes_' + course).set(currentNotes);
-                }
-            });
-
             // Planlayıcıyı doldur
             document.querySelectorAll('.task-text').forEach((div, i) => {
                 if(data[`task_${i}`]) div.innerText = data[`task_${i}`];
@@ -507,7 +477,6 @@
                 const savedNotes = data[`notes_${unitId}`] || [];
                 savedNotes.forEach(text => ekrandaNotOlustur(unitId, text));
                 
-                // Textarea içindeyken sadece Enter'a basınca ekler, Shift+Enter alt satıra geçer
                 input.addEventListener('keydown', function(e) {
                     if (e.key === 'Enter' && !e.shiftKey) {
                         e.preventDefault(); 
@@ -599,10 +568,24 @@
     function sonrakiNot() { if(mevcutNotIndeksi < mevcutTekrarNotlari.length - 1) { mevcutNotIndeksi++; tekrarArayuzunuGuncelle(); } }
     function kapatTekrar() { document.getElementById('review-modal').style.display = 'none'; }
     
+    // Arka plana tıklayarak popup kapatma
     window.onclick = function(event) {
         const modal = document.getElementById('review-modal');
         if (event.target === modal) kapatTekrar();
     }
+
+    // YENİ: OK TUŞLARI İLE KLAVYE KONTROLÜ
+    document.addEventListener('keydown', function(event) {
+        const modal = document.getElementById('review-modal');
+        // Sadece popup açıksa dinle
+        if (modal.style.display === 'flex') {
+            if (event.key === 'ArrowLeft') {
+                oncekiNot();
+            } else if (event.key === 'ArrowRight') {
+                sonrakiNot();
+            }
+        }
+    });
 </script>
 </body>
 </html>
