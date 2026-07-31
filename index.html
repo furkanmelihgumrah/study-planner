@@ -27,8 +27,6 @@
             --scrollbar-track: #f1f1f1;
             --note-item-bg: #fff;
             --note-item-border: #e0e0e0;
-            --unit-hover-bg: #e2e6ea;
-            --unit-text: #333;
             --day-card-bg: #fff;
             --day-card-text: #333;
         }
@@ -48,8 +46,6 @@
             --scrollbar-track: #2a2a2a;
             --note-item-bg: #1e1e1e;
             --note-item-border: #444;
-            --unit-hover-bg: #333;
-            --unit-text: #e0e0e0;
             --day-card-bg: #fff;
             --day-card-text: #333;
         }
@@ -58,6 +54,7 @@
         .container { background-color: var(--container-bg); max-width: 1400px; width: 100%; height: 100%; padding: 15px 25px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); display: flex; flex-direction: column; box-sizing: border-box; transition: background-color 0.3s; overflow: hidden; position: relative; }
         .view-section { display: none; flex-direction: column; height: 100%; }
         .view-section.active { display: flex; }
+        
         .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--card-border); padding-bottom: 10px; margin-bottom: 15px; flex-shrink: 0; flex-wrap: wrap; gap: 15px; }
         .header h1 { font-family: 'Oswald', sans-serif; font-size: 36px; margin: 0; text-transform: uppercase; letter-spacing: 2px; }
         
@@ -70,7 +67,6 @@
         .header-controls { display: flex; gap: 10px; align-items: stretch; flex-wrap: wrap; }
         .btn-custom { background-color: var(--header-bg); color: var(--header-text); border: 1px solid var(--card-border); padding: 8px 15px; border-radius: 15px; font-size: 14px; font-family: 'Roboto', sans-serif; text-align: center; transition: all 0.3s; cursor: pointer; font-weight: bold; display: flex; align-items: center; justify-content: center; }
         .btn-custom:hover { opacity: 0.8; }
-        .btn-custom:disabled { opacity: 0.4; cursor: not-allowed; }
         .btn-primary { background-color: var(--btn-blue); border-color: var(--btn-blue); color: white; }
         .datetime-display { background-color: var(--header-bg); color: var(--header-text); border: 1px solid var(--card-border); padding: 8px 15px; border-radius: 15px; font-size: 14px; font-family: 'Roboto', sans-serif; font-weight: bold; display: flex; align-items: center; justify-content: center; min-width: 220px; letter-spacing: 0.5px; }
         
@@ -79,6 +75,7 @@
         .day-card, #planner-notes { background-color: var(--day-card-bg); color: var(--day-card-text); }
         .notes-card { background-color: var(--note-bg); }
 
+        /* Genel Kaydırma Çubuğu Stilleri */
         ::-webkit-scrollbar { width: 8px; height: 8px; }
         ::-webkit-scrollbar-track { background: var(--scrollbar-track); border-radius: 4px; }
         ::-webkit-scrollbar-thumb { background: var(--scrollbar-thumb); border-radius: 4px; }
@@ -94,44 +91,73 @@
         .btn-clear { display: block; width: 250px; margin: 5px auto 0; padding: 8px; background-color: #dc3545; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 15px; font-weight: bold; flex-shrink: 0; }
         .btn-clear:hover { background-color: #c82333; }
 
+        /* --- TEKRAR NOTLARI SAYFASI --- */
         .course-list { display: flex; flex-direction: column; gap: 15px; overflow-y: auto; padding-right: 10px; flex-grow: 1; }
         .course-detail { border: 2px solid var(--card-border); border-radius: 10px; background-color: var(--container-bg); overflow: hidden; flex-shrink: 0; }
         .course-detail summary { background-color: var(--header-bg); color: var(--header-text); padding: 15px; font-size: 18px; font-weight: bold; cursor: pointer; list-style: none; text-transform: uppercase; letter-spacing: 1px; display: flex; justify-content: space-between; }
         .course-detail summary::-webkit-details-marker { display: none; }
         .course-detail summary::after { content: '+'; font-size: 20px; }
         .course-detail[open] summary::after { content: '-'; }
-        .unit-container { padding: 15px; background-color: var(--note-bg); display: flex; flex-direction: column; gap: 12px; }
-        .unit-details { background-color: var(--container-bg); border: 1px solid var(--input-border); border-radius: 8px; overflow: hidden; box-shadow: 0 2px 5px rgba(0,0,0,0.03); }
-        .unit-summary { padding: 12px 15px; margin: 0; color: var(--unit-text); font-size: 15px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; list-style: none; background-color: transparent; transition: all 0.2s; }
-        .unit-summary:hover { background-color: var(--unit-hover-bg); color: var(--btn-blue); }
-        .unit-summary::after { content: '▼'; font-size: 12px; transition: transform 0.3s; color: var(--text-color); opacity: 0.5; }
-        .unit-details[open] .unit-summary::after { transform: rotate(180deg); }
-        .unit-details[open] .unit-summary { border-bottom: 1px solid var(--input-border); }
-        .unit-content { padding: 15px; }
         
-        .unit-actions { display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap; }
-        .quick-add-wrap { display: flex; flex-grow: 1; background-color: var(--container-bg); border: 1px solid var(--input-border); border-radius: 8px; overflow: hidden; min-width: 200px; }
-        .quick-add-input { flex-grow: 1; border: none; padding: 10px 15px; font-size: 14px; font-family: 'Roboto', sans-serif; background: transparent; color: var(--text-color); outline: none; }
-        .quick-add-btn { background-color: var(--btn-blue); color: white; border: none; padding: 0 15px; cursor: pointer; font-weight: bold; font-size: 18px; }
-        .quick-add-btn:hover { background-color: #0b5ed7; }
-        .btn-review { background-color: #198754; color: white; border: none; padding: 8px 15px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 14px; display: flex; align-items: center; flex-shrink: 0; justify-content: center; }
-        .btn-review:hover { background-color: #157347; }
+        .unit-container { padding: 15px; background-color: var(--note-bg); display: flex; flex-direction: column; gap: 15px; }
         
-        .notes-ul { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 12px; align-items: start; }
-        .note-item { background-color: var(--note-item-bg); border: 1px solid var(--note-item-border); border-left: 4px solid var(--btn-blue); padding: 10px 12px; border-radius: 6px; display: flex; align-items: flex-start; gap: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); transition: transform 0.2s, box-shadow 0.2s; width: 100%; box-sizing: border-box; }
-        .note-item:hover { transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0,0,0,0.05); }
-        .note-content { flex-grow: 1; outline: none; font-size: 14.5px; line-height: 1.5; word-break: break-word; color: var(--text-color); }
-        .note-delete { cursor: pointer; color: #dc3545; background: none; border: none; font-size: 14px; padding: 2px; opacity: 0.5; transition: opacity 0.2s; }
-        .note-item:hover .note-delete { opacity: 1; }
+        /* GÜNCELLENEN: Yeni Geniş Not Ekleme Arayüzü */
+        .unit-actions { display: flex; flex-direction: column; gap: 10px; margin-bottom: 15px; }
+        .add-note-box { background-color: var(--container-bg); border: 1px solid var(--input-border); border-radius: 8px; padding: 10px; display: flex; flex-direction: column; gap: 10px; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02); }
+        .quick-add-input { width: 100%; min-height: 60px; border: none; resize: vertical; font-family: 'Roboto', sans-serif; font-size: 14.5px; line-height: 1.5; background: transparent; color: var(--text-color); outline: none; }
+        .add-btn-container { display: flex; justify-content: flex-end; }
+        .quick-add-btn { background-color: var(--btn-blue); color: white; border: none; padding: 8px 25px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 14px; transition: 0.2s; }
+        .quick-add-btn:hover { background-color: #0b5ed7; transform: translateY(-1px); }
+        
+        /* Büyük Tekrar Butonu */
+        .btn-review { background-color: #198754; color: white; border: none; padding: 12px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 16px; text-align: center; display: block; width: 100%; box-shadow: 0 2px 4px rgba(0,0,0,0.1); transition: 0.2s; }
+        .btn-review:hover { background-color: #157347; transform: translateY(-1px); }
+        
+        /* GÜNCELLENEN: Eşit Boyutlu Not Kartları ve İç Kaydırma */
+        .notes-ul { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 15px; }
+        .note-item { 
+            background-color: var(--note-item-bg); 
+            border: 1px solid var(--note-item-border); 
+            border-left: 4px solid var(--btn-blue); 
+            padding: 12px; 
+            border-radius: 8px; 
+            display: flex; 
+            flex-direction: column;
+            height: 160px; /* Kartların boyutu sabitlendi */
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02); 
+            transition: transform 0.2s, box-shadow 0.2s; 
+            box-sizing: border-box; 
+        }
+        .note-item:hover { transform: translateY(-2px); box-shadow: 0 6px 12px rgba(0,0,0,0.05); }
+        
+        .note-content { 
+            flex-grow: 1; 
+            outline: none; 
+            font-size: 14px; 
+            line-height: 1.5; 
+            word-break: break-word; 
+            color: var(--text-color); 
+            overflow-y: auto; /* Yazı taşarsa kendi içinde kaydırma çubuğu çıkar */
+            padding-right: 5px; 
+            margin-bottom: 5px;
+        }
+        /* Karta özel ince scrollbar */
+        .note-content::-webkit-scrollbar { width: 4px; }
+        .note-content::-webkit-scrollbar-thumb { background-color: var(--input-border); border-radius: 4px; }
 
+        .note-delete { align-self: flex-end; cursor: pointer; color: #dc3545; background: none; border: none; font-size: 16px; padding: 2px; opacity: 0.5; transition: 0.2s; }
+        .note-item:hover .note-delete { opacity: 1; }
+        .note-delete:hover { color: #c82333; transform: scale(1.1); }
+
+        /* Modal (Pop-up) Stilleri */
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.75); z-index: 10000; justify-content: center; align-items: center; backdrop-filter: blur(4px); }
         .modal-content { background-color: var(--container-bg); border: 2px solid var(--btn-blue); border-radius: 15px; width: 90%; max-width: 600px; min-height: 350px; display: flex; flex-direction: column; box-shadow: 0 10px 30px rgba(0,0,0,0.4); position: relative; animation: popIn 0.3s ease-out; }
         @keyframes popIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
         .modal-close { position: absolute; top: 12px; right: 15px; background: none; border: none; font-size: 24px; color: var(--header-text); cursor: pointer; opacity: 0.8; transition: 0.2s; }
         .modal-close:hover { opacity: 1; color: #ff4d4d; transform: scale(1.1); }
         .modal-header { background-color: var(--header-bg); color: var(--header-text); padding: 15px 40px 15px 15px; font-size: 18px; font-weight: bold; text-align: center; border-radius: 12px 12px 0 0; }
-        .modal-body { flex-grow: 1; display: flex; justify-content: center; align-items: center; padding: 30px; text-align: center; background-color: var(--day-card-bg); }
-        #modal-note-text { font-size: 24px; line-height: 1.5; color: var(--day-card-text); font-weight: 500; }
+        .modal-body { flex-grow: 1; display: flex; justify-content: center; align-items: center; padding: 30px; text-align: center; background-color: var(--day-card-bg); max-height: 400px; overflow-y: auto; }
+        #modal-note-text { font-size: 22px; line-height: 1.6; color: var(--day-card-text); font-weight: 500; white-space: pre-wrap; }
         .modal-footer { display: flex; justify-content: space-between; align-items: center; padding: 15px 25px; border-top: 1px solid var(--input-border); background-color: var(--note-bg); border-radius: 0 0 12px 12px; }
         #modal-progress { font-size: 18px; font-weight: bold; font-family: 'Oswald', sans-serif; color: var(--btn-blue); }
 
@@ -148,10 +174,8 @@
             .header h1 { font-size: 28px; text-align: center; }
             .btn-custom { padding: 10px 15px; font-size: 14px; flex-grow: 1; }
             .datetime-display { width: 100%; padding: 10px; font-size: 13px; }
-            .unit-actions { flex-direction: column; } 
-            .btn-review { width: 100%; padding: 12px; font-size: 16px; }
             .modal-body { padding: 20px; }
-            #modal-note-text { font-size: 20px; }
+            #modal-note-text { font-size: 18px; }
         }
     </style>
 </head>
@@ -251,7 +275,7 @@
         <button class="btn-clear" onclick="haftayiTemizle()">Tüm Haftayı Temizle</button>
     </div>
 
-    <!-- 2. GÖRÜNÜM: TEKRAR NOTLARI -->
+    <!-- 2. GÖRÜNÜM: TEKRAR NOTLARI (Üniteler Kaldırıldı) -->
     <div id="notes-view" class="view-section">
         <div class="header">
             <h1>TEKRAR NOTLARIM (ÖNLİSANS)</h1>
@@ -262,225 +286,108 @@
         
         <div class="course-list">
             
-            <!-- TARİH BÖLÜMÜ YENİ ALT BAŞLIKLARLA -->
+            <!-- TARİH -->
             <details class="course-detail">
                 <summary>Tarih</summary>
                 <div class="unit-container">
-                    <details class="unit-details"><summary class="unit-summary">İslamiyet Öncesi Türk Tarihi</summary><div class="unit-content">
-                        <div class="unit-actions">
-                            <div class="quick-add-wrap"><input type="text" class="quick-add-input" id="input-tarih-1" placeholder="Yeni hap bilgi..."><button class="quick-add-btn" onclick="notEkle('tarih-1')">+</button></div>
-                            <button class="btn-review" onclick="tekrarEt('tarih-1')">🔁 Tekrar</button>
+                    <div class="unit-actions">
+                        <div class="add-note-box">
+                            <textarea class="quick-add-input" id="input-tarih" placeholder="Tarih dersi için yeni bir not yazın... (Kısayol: Enter tuşu ile hızlıca ekleyebilirsiniz)"></textarea>
+                            <div class="add-btn-container">
+                                <button class="quick-add-btn" onclick="notEkle('tarih')">Ekle +</button>
+                            </div>
                         </div>
-                        <div class="notes-ul" id="list-tarih-1"></div>
-                    </div></details>
-                    
-                    <details class="unit-details"><summary class="unit-summary">İlk Türk - İslam Devletleri</summary><div class="unit-content">
-                        <div class="unit-actions">
-                            <div class="quick-add-wrap"><input type="text" class="quick-add-input" id="input-tarih-2" placeholder="Yeni hap bilgi..."><button class="quick-add-btn" onclick="notEkle('tarih-2')">+</button></div>
-                            <button class="btn-review" onclick="tekrarEt('tarih-2')">🔁 Tekrar</button>
-                        </div>
-                        <div class="notes-ul" id="list-tarih-2"></div>
-                    </div></details>
-                    
-                    <details class="unit-details"><summary class="unit-summary">Osmanlı Kültür ve Medeniyeti</summary><div class="unit-content">
-                        <div class="unit-actions">
-                            <div class="quick-add-wrap"><input type="text" class="quick-add-input" id="input-tarih-3" placeholder="Yeni hap bilgi..."><button class="quick-add-btn" onclick="notEkle('tarih-3')">+</button></div>
-                            <button class="btn-review" onclick="tekrarEt('tarih-3')">🔁 Tekrar</button>
-                        </div>
-                        <div class="notes-ul" id="list-tarih-3"></div>
-                    </div></details>
-                    
-                    <details class="unit-details"><summary class="unit-summary">Osmanlı Devleti - Kuruluş</summary><div class="unit-content">
-                        <div class="unit-actions">
-                            <div class="quick-add-wrap"><input type="text" class="quick-add-input" id="input-tarih-4" placeholder="Yeni hap bilgi..."><button class="quick-add-btn" onclick="notEkle('tarih-4')">+</button></div>
-                            <button class="btn-review" onclick="tekrarEt('tarih-4')">🔁 Tekrar</button>
-                        </div>
-                        <div class="notes-ul" id="list-tarih-4"></div>
-                    </div></details>
-                    
-                    <details class="unit-details"><summary class="unit-summary">Osmanlı Devleti - Yükselme</summary><div class="unit-content">
-                        <div class="unit-actions">
-                            <div class="quick-add-wrap"><input type="text" class="quick-add-input" id="input-tarih-5" placeholder="Yeni hap bilgi..."><button class="quick-add-btn" onclick="notEkle('tarih-5')">+</button></div>
-                            <button class="btn-review" onclick="tekrarEt('tarih-5')">🔁 Tekrar</button>
-                        </div>
-                        <div class="notes-ul" id="list-tarih-5"></div>
-                    </div></details>
-                    
-                    <details class="unit-details"><summary class="unit-summary">Osmanlı Devleti - Duraklama</summary><div class="unit-content">
-                        <div class="unit-actions">
-                            <div class="quick-add-wrap"><input type="text" class="quick-add-input" id="input-tarih-6" placeholder="Yeni hap bilgi..."><button class="quick-add-btn" onclick="notEkle('tarih-6')">+</button></div>
-                            <button class="btn-review" onclick="tekrarEt('tarih-6')">🔁 Tekrar</button>
-                        </div>
-                        <div class="notes-ul" id="list-tarih-6"></div>
-                    </div></details>
-                    
-                    <details class="unit-details"><summary class="unit-summary">Osmanlı Devleti - Gerileme</summary><div class="unit-content">
-                        <div class="unit-actions">
-                            <div class="quick-add-wrap"><input type="text" class="quick-add-input" id="input-tarih-7" placeholder="Yeni hap bilgi..."><button class="quick-add-btn" onclick="notEkle('tarih-7')">+</button></div>
-                            <button class="btn-review" onclick="tekrarEt('tarih-7')">🔁 Tekrar</button>
-                        </div>
-                        <div class="notes-ul" id="list-tarih-7"></div>
-                    </div></details>
-                    
-                    <details class="unit-details"><summary class="unit-summary">Osmanlı Devleti - Dağılma</summary><div class="unit-content">
-                        <div class="unit-actions">
-                            <div class="quick-add-wrap"><input type="text" class="quick-add-input" id="input-tarih-8" placeholder="Yeni hap bilgi..."><button class="quick-add-btn" onclick="notEkle('tarih-8')">+</button></div>
-                            <button class="btn-review" onclick="tekrarEt('tarih-8')">🔁 Tekrar</button>
-                        </div>
-                        <div class="notes-ul" id="list-tarih-8"></div>
-                    </div></details>
-                    
-                    <details class="unit-details"><summary class="unit-summary">XIX. Yüzyıl Islahatları</summary><div class="unit-content">
-                        <div class="unit-actions">
-                            <div class="quick-add-wrap"><input type="text" class="quick-add-input" id="input-tarih-9" placeholder="Yeni hap bilgi..."><button class="quick-add-btn" onclick="notEkle('tarih-9')">+</button></div>
-                            <button class="btn-review" onclick="tekrarEt('tarih-9')">🔁 Tekrar</button>
-                        </div>
-                        <div class="notes-ul" id="list-tarih-9"></div>
-                    </div></details>
-                    
-                    <details class="unit-details"><summary class="unit-summary">XX. Yüzyıl Başlarında Osmanlı</summary><div class="unit-content">
-                        <div class="unit-actions">
-                            <div class="quick-add-wrap"><input type="text" class="quick-add-input" id="input-tarih-10" placeholder="Yeni hap bilgi..."><button class="quick-add-btn" onclick="notEkle('tarih-10')">+</button></div>
-                            <button class="btn-review" onclick="tekrarEt('tarih-10')">🔁 Tekrar</button>
-                        </div>
-                        <div class="notes-ul" id="list-tarih-10"></div>
-                    </div></details>
-                    
-                    <details class="unit-details"><summary class="unit-summary">İnkılap Tarihi ve Atatürk Dönemi</summary><div class="unit-content">
-                        <div class="unit-actions">
-                            <div class="quick-add-wrap"><input type="text" class="quick-add-input" id="input-tarih-11" placeholder="Yeni hap bilgi..."><button class="quick-add-btn" onclick="notEkle('tarih-11')">+</button></div>
-                            <button class="btn-review" onclick="tekrarEt('tarih-11')">🔁 Tekrar</button>
-                        </div>
-                        <div class="notes-ul" id="list-tarih-11"></div>
-                    </div></details>
-                    
-                    <details class="unit-details"><summary class="unit-summary">Çağdaş Türk ve Dünya Tarihi</summary><div class="unit-content">
-                        <div class="unit-actions">
-                            <div class="quick-add-wrap"><input type="text" class="quick-add-input" id="input-tarih-12" placeholder="Yeni hap bilgi..."><button class="quick-add-btn" onclick="notEkle('tarih-12')">+</button></div>
-                            <button class="btn-review" onclick="tekrarEt('tarih-12')">🔁 Tekrar</button>
-                        </div>
-                        <div class="notes-ul" id="list-tarih-12"></div>
-                    </div></details>
+                        <button class="btn-review" onclick="tekrarEt('tarih')">🔁 Tüm Tarih Notlarını Tekrar Et</button>
+                    </div>
+                    <div class="notes-ul" id="list-tarih"></div>
                 </div>
             </details>
             
             <!-- COĞRAFYA -->
-            <details class="course-detail"><summary>Coğrafya</summary><div class="unit-container">
-                <details class="unit-details"><summary class="unit-summary">Fiziki Coğrafya</summary><div class="unit-content">
+            <details class="course-detail">
+                <summary>Coğrafya</summary>
+                <div class="unit-container">
                     <div class="unit-actions">
-                        <div class="quick-add-wrap"><input type="text" class="quick-add-input" id="input-cografya-1" placeholder="Yeni hap bilgi..."><button class="quick-add-btn" onclick="notEkle('cografya-1')">+</button></div>
-                        <button class="btn-review" onclick="tekrarEt('cografya-1')">🔁 Tekrar</button>
+                        <div class="add-note-box">
+                            <textarea class="quick-add-input" id="input-cografya" placeholder="Coğrafya dersi için yeni bir not yazın..."></textarea>
+                            <div class="add-btn-container">
+                                <button class="quick-add-btn" onclick="notEkle('cografya')">Ekle +</button>
+                            </div>
+                        </div>
+                        <button class="btn-review" onclick="tekrarEt('cografya')">🔁 Tüm Coğrafya Notlarını Tekrar Et</button>
                     </div>
-                    <div class="notes-ul" id="list-cografya-1"></div>
-                </div></details>
-                <details class="unit-details"><summary class="unit-summary">Beşeri Coğrafya</summary><div class="unit-content">
-                    <div class="unit-actions">
-                        <div class="quick-add-wrap"><input type="text" class="quick-add-input" id="input-cografya-2" placeholder="Yeni hap bilgi..."><button class="quick-add-btn" onclick="notEkle('cografya-2')">+</button></div>
-                        <button class="btn-review" onclick="tekrarEt('cografya-2')">🔁 Tekrar</button>
-                    </div>
-                    <div class="notes-ul" id="list-cografya-2"></div>
-                </div></details>
-                <details class="unit-details"><summary class="unit-summary">Ekonomik Coğrafya</summary><div class="unit-content">
-                    <div class="unit-actions">
-                        <div class="quick-add-wrap"><input type="text" class="quick-add-input" id="input-cografya-3" placeholder="Yeni hap bilgi..."><button class="quick-add-btn" onclick="notEkle('cografya-3')">+</button></div>
-                        <button class="btn-review" onclick="tekrarEt('cografya-3')">🔁 Tekrar</button>
-                    </div>
-                    <div class="notes-ul" id="list-cografya-3"></div>
-                </div></details>
-            </div></details>
+                    <div class="notes-ul" id="list-cografya"></div>
+                </div>
+            </details>
             
             <!-- VATANDAŞLIK -->
-            <details class="course-detail"><summary>Vatandaşlık</summary><div class="unit-container">
-                <details class="unit-details"><summary class="unit-summary">Hukuk Temel Kavramlar</summary><div class="unit-content">
+            <details class="course-detail">
+                <summary>Vatandaşlık</summary>
+                <div class="unit-container">
                     <div class="unit-actions">
-                        <div class="quick-add-wrap"><input type="text" class="quick-add-input" id="input-vatandaslik-1" placeholder="Yeni hap bilgi..."><button class="quick-add-btn" onclick="notEkle('vatandaslik-1')">+</button></div>
-                        <button class="btn-review" onclick="tekrarEt('vatandaslik-1')">🔁 Tekrar</button>
+                        <div class="add-note-box">
+                            <textarea class="quick-add-input" id="input-vatandaslik" placeholder="Vatandaşlık dersi için yeni bir not yazın..."></textarea>
+                            <div class="add-btn-container">
+                                <button class="quick-add-btn" onclick="notEkle('vatandaslik')">Ekle +</button>
+                            </div>
+                        </div>
+                        <button class="btn-review" onclick="tekrarEt('vatandaslik')">🔁 Tüm Vatandaşlık Notlarını Tekrar Et</button>
                     </div>
-                    <div class="notes-ul" id="list-vatandaslik-1"></div>
-                </div></details>
-                <details class="unit-details"><summary class="unit-summary">Anayasa Hukuku</summary><div class="unit-content">
-                    <div class="unit-actions">
-                        <div class="quick-add-wrap"><input type="text" class="quick-add-input" id="input-vatandaslik-2" placeholder="Yeni hap bilgi..."><button class="quick-add-btn" onclick="notEkle('vatandaslik-2')">+</button></div>
-                        <button class="btn-review" onclick="tekrarEt('vatandaslik-2')">🔁 Tekrar</button>
-                    </div>
-                    <div class="notes-ul" id="list-vatandaslik-2"></div>
-                </div></details>
-                <details class="unit-details"><summary class="unit-summary">İdare Hukuku</summary><div class="unit-content">
-                    <div class="unit-actions">
-                        <div class="quick-add-wrap"><input type="text" class="quick-add-input" id="input-vatandaslik-3" placeholder="Yeni hap bilgi..."><button class="quick-add-btn" onclick="notEkle('vatandaslik-3')">+</button></div>
-                        <button class="btn-review" onclick="tekrarEt('vatandaslik-3')">🔁 Tekrar</button>
-                    </div>
-                    <div class="notes-ul" id="list-vatandaslik-3"></div>
-                </div></details>
-            </div></details>
+                    <div class="notes-ul" id="list-vatandaslik"></div>
+                </div>
+            </details>
             
             <!-- TÜRKÇE -->
-            <details class="course-detail"><summary>Türkçe</summary><div class="unit-container">
-                <details class="unit-details"><summary class="unit-summary">Anlam Bilgisi</summary><div class="unit-content">
+            <details class="course-detail">
+                <summary>Türkçe</summary>
+                <div class="unit-container">
                     <div class="unit-actions">
-                        <div class="quick-add-wrap"><input type="text" class="quick-add-input" id="input-turkce-1" placeholder="Yeni hap bilgi..."><button class="quick-add-btn" onclick="notEkle('turkce-1')">+</button></div>
-                        <button class="btn-review" onclick="tekrarEt('turkce-1')">🔁 Tekrar</button>
+                        <div class="add-note-box">
+                            <textarea class="quick-add-input" id="input-turkce" placeholder="Türkçe dersi için yeni bir not yazın..."></textarea>
+                            <div class="add-btn-container">
+                                <button class="quick-add-btn" onclick="notEkle('turkce')">Ekle +</button>
+                            </div>
+                        </div>
+                        <button class="btn-review" onclick="tekrarEt('turkce')">🔁 Tüm Türkçe Notlarını Tekrar Et</button>
                     </div>
-                    <div class="notes-ul" id="list-turkce-1"></div>
-                </div></details>
-                <details class="unit-details"><summary class="unit-summary">Dil Bilgisi ve Yazım</summary><div class="unit-content">
-                    <div class="unit-actions">
-                        <div class="quick-add-wrap"><input type="text" class="quick-add-input" id="input-turkce-2" placeholder="Yeni hap bilgi..."><button class="quick-add-btn" onclick="notEkle('turkce-2')">+</button></div>
-                        <button class="btn-review" onclick="tekrarEt('turkce-2')">🔁 Tekrar</button>
-                    </div>
-                    <div class="notes-ul" id="list-turkce-2"></div>
-                </div></details>
-                <details class="unit-details"><summary class="unit-summary">Sözel Mantık</summary><div class="unit-content">
-                    <div class="unit-actions">
-                        <div class="quick-add-wrap"><input type="text" class="quick-add-input" id="input-turkce-3" placeholder="Yeni hap bilgi..."><button class="quick-add-btn" onclick="notEkle('turkce-3')">+</button></div>
-                        <button class="btn-review" onclick="tekrarEt('turkce-3')">🔁 Tekrar</button>
-                    </div>
-                    <div class="notes-ul" id="list-turkce-3"></div>
-                </div></details>
-            </div></details>
+                    <div class="notes-ul" id="list-turkce"></div>
+                </div>
+            </details>
             
             <!-- MATEMATİK -->
-            <details class="course-detail"><summary>Matematik</summary><div class="unit-container">
-                <details class="unit-details"><summary class="unit-summary">Temel Kavramlar ve Cebir</summary><div class="unit-content">
+            <details class="course-detail">
+                <summary>Matematik</summary>
+                <div class="unit-container">
                     <div class="unit-actions">
-                        <div class="quick-add-wrap"><input type="text" class="quick-add-input" id="input-matematik-1" placeholder="Yeni hap bilgi..."><button class="quick-add-btn" onclick="notEkle('matematik-1')">+</button></div>
-                        <button class="btn-review" onclick="tekrarEt('matematik-1')">🔁 Tekrar</button>
+                        <div class="add-note-box">
+                            <textarea class="quick-add-input" id="input-matematik" placeholder="Matematik dersi için yeni bir not yazın..."></textarea>
+                            <div class="add-btn-container">
+                                <button class="quick-add-btn" onclick="notEkle('matematik')">Ekle +</button>
+                            </div>
+                        </div>
+                        <button class="btn-review" onclick="tekrarEt('matematik')">🔁 Tüm Matematik Notlarını Tekrar Et</button>
                     </div>
-                    <div class="notes-ul" id="list-matematik-1"></div>
-                </div></details>
-                <details class="unit-details"><summary class="unit-summary">Problemler</summary><div class="unit-content">
-                    <div class="unit-actions">
-                        <div class="quick-add-wrap"><input type="text" class="quick-add-input" id="input-matematik-2" placeholder="Yeni hap bilgi..."><button class="quick-add-btn" onclick="notEkle('matematik-2')">+</button></div>
-                        <button class="btn-review" onclick="tekrarEt('matematik-2')">🔁 Tekrar</button>
-                    </div>
-                    <div class="notes-ul" id="list-matematik-2"></div>
-                </div></details>
-                <details class="unit-details"><summary class="unit-summary">Geometri ve Sayısal Mantık</summary><div class="unit-content">
-                    <div class="unit-actions">
-                        <div class="quick-add-wrap"><input type="text" class="quick-add-input" id="input-matematik-3" placeholder="Yeni hap bilgi..."><button class="quick-add-btn" onclick="notEkle('matematik-3')">+</button></div>
-                        <button class="btn-review" onclick="tekrarEt('matematik-3')">🔁 Tekrar</button>
-                    </div>
-                    <div class="notes-ul" id="list-matematik-3"></div>
-                </div></details>
-            </div></details>
+                    <div class="notes-ul" id="list-matematik"></div>
+                </div>
+            </details>
             
             <!-- GÜNCEL BİLGİLER -->
-            <details class="course-detail"><summary>Güncel Bilgiler</summary><div class="unit-container">
-                <details class="unit-details"><summary class="unit-summary">Türkiye ve Dünya Gündemi</summary><div class="unit-content">
+            <details class="course-detail">
+                <summary>Güncel Bilgiler</summary>
+                <div class="unit-container">
                     <div class="unit-actions">
-                        <div class="quick-add-wrap"><input type="text" class="quick-add-input" id="input-guncel-1" placeholder="Yeni hap bilgi..."><button class="quick-add-btn" onclick="notEkle('guncel-1')">+</button></div>
-                        <button class="btn-review" onclick="tekrarEt('guncel-1')">🔁 Tekrar</button>
+                        <div class="add-note-box">
+                            <textarea class="quick-add-input" id="input-guncel" placeholder="Güncel Bilgiler için yeni bir not yazın..."></textarea>
+                            <div class="add-btn-container">
+                                <button class="quick-add-btn" onclick="notEkle('guncel')">Ekle +</button>
+                            </div>
+                        </div>
+                        <button class="btn-review" onclick="tekrarEt('guncel')">🔁 Tüm Güncel Bilgiler Notlarını Tekrar Et</button>
                     </div>
-                    <div class="notes-ul" id="list-guncel-1"></div>
-                </div></details>
-                <details class="unit-details"><summary class="unit-summary">Uluslararası Kuruluşlar</summary><div class="unit-content">
-                    <div class="unit-actions">
-                        <div class="quick-add-wrap"><input type="text" class="quick-add-input" id="input-guncel-2" placeholder="Yeni hap bilgi..."><button class="quick-add-btn" onclick="notEkle('guncel-2')">+</button></div>
-                        <button class="btn-review" onclick="tekrarEt('guncel-2')">🔁 Tekrar</button>
-                    </div>
-                    <div class="notes-ul" id="list-guncel-2"></div>
-                </div></details>
-            </div></details>
+                    <div class="notes-ul" id="list-guncel"></div>
+                </div>
+            </details>
+
         </div>
     </div>
 </div>
@@ -488,7 +395,7 @@
 <div id="review-modal" class="modal-overlay">
     <div class="modal-content">
         <button class="modal-close" onclick="kapatTekrar()">✖</button>
-        <div class="modal-header" id="modal-unit-title">Ünite Adı</div>
+        <div class="modal-header" id="modal-unit-title">Ders Adı</div>
         <div class="modal-body">
             <p id="modal-note-text">Not içeriği burada görünecek...</p>
         </div>
@@ -505,14 +412,13 @@
     // 1. FIREBASE BAĞLANTI AYARLARINI BURAYA YAPIŞTIR
     // ==========================================
     const firebaseConfig = {
-      apiKey: "AIzaSyDEKnJplvCwilJeuh8Kz_avfnio97hxd5A",
-      authDomain: "kpss-planlayici-f4876.firebaseapp.com",
-      databaseURL: "https://kpss-planlayici-f4876-default-rtdb.europe-west1.firebasedatabase.app",
-      projectId: "kpss-planlayici-f4876",
-      storageBucket: "kpss-planlayici-f4876.firebasestorage.app",
-      messagingSenderId: "613831557767",
-      appId: "1:613831557767:web:28487f99370976da466e22",
-      measurementId: "G-8GQV4HGCB7"
+        apiKey: "SENIN_API_ANAHTARIN",
+        authDomain: "proje-adi.firebaseapp.com",
+        databaseURL: "https://proje-adi-default-rtdb.firebaseio.com",
+        projectId: "proje-adi",
+        storageBucket: "proje-adi.appspot.com",
+        messagingSenderId: "123456789",
+        appId: "1:123456789:web:abcdef"
     };
 
     firebase.initializeApp(firebaseConfig);
@@ -559,6 +465,31 @@
         db.ref('kpss_data').once('value').then((snapshot) => {
             const data = snapshot.val() || {};
 
+            // Eski ünite notlarını ana ders başlığına aktarma sistemi
+            const courses = ['tarih', 'cografya', 'vatandaslik', 'turkce', 'matematik', 'guncel'];
+            courses.forEach(course => {
+                let combinedOldNotes = [];
+                let needsMigration = false;
+                
+                // Eski 12 üniteye kadar tarama
+                for(let j=1; j<=12; j++) {
+                    let oldKey = `notes_${course}-${j}`;
+                    if(data[oldKey]) {
+                        needsMigration = true;
+                        combinedOldNotes = combinedOldNotes.concat(data[oldKey]);
+                        db.ref('kpss_data/' + oldKey).remove(); // Eski veriyi temizle
+                    }
+                }
+                
+                let currentNotes = data[`notes_${course}`] || [];
+                if(needsMigration) {
+                    currentNotes = [...currentNotes, ...combinedOldNotes];
+                    data[`notes_${course}`] = currentNotes;
+                    db.ref('kpss_data/notes_' + course).set(currentNotes);
+                }
+            });
+
+            // Planlayıcıyı doldur
             document.querySelectorAll('.task-text').forEach((div, i) => {
                 if(data[`task_${i}`]) div.innerText = data[`task_${i}`];
                 div.addEventListener('input', () => db.ref('kpss_data/task_' + i).set(div.innerText));
@@ -569,11 +500,19 @@
                 cb.addEventListener('change', () => db.ref('kpss_data/check_' + i).set(cb.checked));
             });
 
+            // Notları yükle ve Kısayol (Enter) ataması yap
             document.querySelectorAll('.quick-add-input').forEach(input => {
                 const unitId = input.id.replace('input-', '');
                 const savedNotes = data[`notes_${unitId}`] || [];
                 savedNotes.forEach(text => ekrandaNotOlustur(unitId, text));
-                input.onkeypress = (e) => { if(e.key === 'Enter') notEkle(unitId); };
+                
+                // Textarea içindeyken sadece Enter'a basınca ekler, Shift+Enter alt satıra geçer
+                input.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                        e.preventDefault(); 
+                        notEkle(unitId);
+                    }
+                });
             });
 
             document.getElementById('loading-overlay').style.opacity = '0';
@@ -589,7 +528,7 @@
         const list = document.getElementById(`list-${unitId}`);
         const div = document.createElement('div');
         div.className = 'note-item';
-        div.innerHTML = `<div class="note-content" contenteditable="true">${text}</div><button class="note-delete" onclick="this.parentElement.remove(); notlariKaydet('${unitId}');">✖</button>`;
+        div.innerHTML = `<div class="note-content" contenteditable="true" spellcheck="false">${text}</div><button class="note-delete" onclick="this.parentElement.remove(); notlariKaydet('${unitId}');">✖</button>`;
         div.querySelector('.note-content').addEventListener('input', () => notlariKaydet(unitId));
         list.appendChild(div);
     }
@@ -635,12 +574,12 @@
         mevcutTekrarNotlari = Array.from(notesElements).map(el => el.innerText.trim()).filter(text => text !== '');
 
         if(mevcutTekrarNotlari.length === 0) {
-            alert("Bu ünitede tekrar edilecek hap bilgi bulunmuyor. Lütfen önce not ekleyin.");
+            alert("Bu derste tekrar edilecek not bulunmuyor. Lütfen önce not ekleyin.");
             return;
         }
 
-        const detailsBox = listContainer.closest('.unit-details');
-        const unitName = detailsBox ? detailsBox.querySelector('.unit-summary').innerText.replace('▼', '').trim() : 'Tekrar Modu';
+        const detailsBox = listContainer.closest('.course-detail');
+        const unitName = detailsBox ? detailsBox.querySelector('summary').innerText.trim() : 'Tekrar Modu';
         document.getElementById('modal-unit-title').innerText = unitName;
 
         mevcutNotIndeksi = 0;
