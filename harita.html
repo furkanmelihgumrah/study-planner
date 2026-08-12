@@ -237,12 +237,19 @@
         <button onclick="haritayiGuncelle('fındık')">Fındık</button>
         <button onclick="haritayiGuncelle('aycicegi')">Ayçiçeği</button>
         <button onclick="haritayiGuncelle('misir')">Mısır</button>
+        <button onclick="haritayiGuncelle('aspir')">Aspir</button>
+
+        <button onclick="haritayiGuncelle('ovalar')" style="background-color: #e67e22;">🖼️ Ovalar Haritası</button>
+        <button onclick="haritayiGuncelle('platolar')" style="background-color: #e67e22;">🖼️ Platolar Haritası</button>
+        <button onclick="haritayiGuncelle('daglar')" style="background-color: #e67e22;"> ⛰️Dağlar Haritası</button>
+
         <button onclick="haritayiGuncelle('temizle')" class="btn-temizle">Haritayı Temizle</button>
     </div>
 
     <div class="harita-container">
         <!-- YENİ BULDUĞUN TÜM SVG KODUNU BURAYA YAPIŞTIRACAKSIN -->
         <!-- Örnek olarak attığın Adana kısmı aşağıda bırakılmıştır -->
+         <img id="ozel-harita-resmi" src="" style="display: none; width: 100%; height: auto; border-radius: 8px;" alt="Özel Çalışma Haritası">
         <svg version="1.1" id="svg-turkiye-haritasi" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 1007.478 527.323" xml:space="preserve">
         <g id="turkiye">
           <g id="adana" data-plakakodu="01" data-alankodu="322" data-iladi="Adana">
@@ -536,6 +543,7 @@
         setInterval(sayaciGuncelle, 1000);
         sayaciGuncelle(); // Sayfa yüklendiğinde anında çalışsın
 
+        
         // --- 2. VERİTABANI ---
         const kpssVeri = {
             tarim: [
@@ -595,30 +603,35 @@
                 { il_id: "adana", renk: "#ffc000", baslik: "Mısır", detay: "3" },
                 { il_id: "eskisehir", renk: "#ffc000", baslik: "Mısır", detay: "4" },
                 { il_id: "mardin", renk: "#ffc000", baslik: "Mısır", detay: "5" }
-        ]
+        ],
+        aspir: [
+                { il_id: "kayseri", renk: "#ce7e00", baslik: "Aspir", detay: "1. sırada" },]
 }
+// --- RESİM HARİTALAR VERİTABANI ---
+        const resimHaritalar = {
+            ovalar: "ovalar.png",  // Bilgisayarındaki dosya adı veya internet linki
+            platolar: "platolar.png",
+            daglar: "daglar.png"
+        };
 // --- SAĞ PANEL İÇİN KONU ÖZETLERİ ---
         const konuOzetleri = {
             fındık: {
-                 baslik: "Fındık Yetiştiriciliği",
-                 icerik: "<ul><li><strong>Fındık:</strong> Kış aylarının ılık geçtiği ve yıllık yağışın fazla olduğu Karadeniz'in kıyılarında yetişir.</li><li><strong>En fazla SAMSUN'da</strong> üretilmektedir.</li></ul>"
-
-
+                baslik: "Türkiye'de Madenler",
+                icerik: "<ul><li><strong>Krom:</strong> Çeliği sertleştirmede kullanılır. Paslanmaz. En çok Elazığ (Guleman) ve Muğla (Köyceğiz) çevresinde çıkarılır.</li><li><strong>Demir:</strong> Ağır sanayinin hammaddesidir. Sivas (Divriği) ve Malatya (Hekimhan) en önemli çıkarma alanlarıdır.</li><li><strong>Bakır:</strong> Elektrik-elektronik sanayisinde çok kullanılır. Artvin (Murgul), Kastamonu (Küre) ve Elazığ (Maden) ana merkezlerdir.</li></ul>"
             },
             misir: {
-                baslik: "Mısır Yetiştiriciliği",
-                icerik: "<ul><li>Karadeniz ikliminin bir ürünü olmasına rağmen yağ sanayisinde kullanıldığı için sulama sayesinde Güney Marmara, Ege, Akdeniz, İç Anadolu ve Güneydoğu Anadoluda yetiştirilir.</li><li>En çok <strong>KONYA'da</strong> yetiştirilir.</li></ul>"
-
-
+                baslik: "Fındık Tarımı",
+                icerik: "<ul><li>Karadeniz ikliminin doğal bitki örtüsüdür.</li><li>Her mevsim yağışlı ve nemli ortam ister.</li><li>Türkiye, fındık üretiminde ve ihracatında <strong>Dünya birincisidir</strong>.</li><li>En çok Ordu, Giresun ve Sakarya çevrelerinde yetiştirilir.</li></ul>"
             },
             aycicegi: {
-                  baslik: "Ayçiçeği Yetiştiriciliği",
-                  icerik: "<ul><li>Büyüme döneminde su, olgunlaşma döneminde bol güneş ister.</li><li>Türkiye'de yağ sanayisinde en çok kullanılan bitkidir.</li><li>Üretiminde <strong>Marmara Bölgesi (Ergene Bölümü)</strong> ilk sırada yer alır.</li><li>En çok <strong>KONYA'da</strong> yetiştirilir</li></ul>"
+                baslik: "Ayçiçeği Tarımı",
+                icerik: "<ul><li>Büyüme döneminde su, olgunlaşma döneminde bol güneş ister.</li><li>Türkiye'de yağ sanayisinde en çok kullanılan bitkidir.</li><li>Üretiminde <strong>Marmara Bölgesi (Ergene Bölümü)</strong> ilk sırada yer alır.</li><li>İç Anadolu'da (Özellikle Konya) sulama imkanlarının gelişmesiyle üretimi artmıştır.</li></ul>"
+
         },
             tarim: {
-                  baslik: "TÜİK Tarım Verileri",
-                  icerik: "<ul><li>Güncel 2025 TÜİK tarım verileridir.</li></ul>"
-                   },
+                baslik: "Fındık Tarımı",
+                icerik: "<ul><li>Karadeniz ikliminin doğal bitki örtüsüdür.</li><li>Her mevsim yağışlı ve nemli ortam ister.</li><li>Türkiye, fındık üretiminde ve ihracatında <strong>Dünya birincisidir</strong>.</li><li>En çok Ordu, Giresun ve Sakarya çevrelerinde yetiştirilir.</li></ul>"
+            },
 }
         const sagPanel = document.getElementById("sag-panel");
         const panelBaslik = document.getElementById("panel-baslik");
@@ -634,6 +647,24 @@
         // --- 3. HARİTAYI BOYAMA FONKSİYONU ---
         // --- 3. HARİTAYI BOYAMA VE PANELİ AÇMA FONKSİYONU ---
         function haritayiGuncelle(kategori) {
+        const svgHarita = document.querySelector("svg"); // SVG'yi bul
+            const ozelResim = document.getElementById("ozel-harita-resmi"); // Resmi bul
+
+            // --- DİNAMİK RESİM KONTROLÜ ---
+            // Tıklanan kategori resim veritabanında var mı?
+            if (resimHaritalar[kategori]) {
+                svgHarita.style.display = "none";    // İnteraktif haritayı gizle
+                ozelResim.src = resimHaritalar[kategori]; // Hangi butona basıldıysa o resmi yükle
+                ozelResim.style.display = "block";   // Resmi göster
+                
+                // Varsa açık paneli kapat
+                if (typeof paneliKapat === "function") paneliKapat(); 
+                return; // İşlemi bitir, SVG boyama kodlarına inme
+            } else {
+                // Resim butonlarına basılmadıysa (Madenler vs. basıldıysa)
+                svgHarita.style.display = "block";   // SVG'yi göster
+                ozelResim.style.display = "none";    // Resmi gizle
+            }
             const tumIller = document.querySelectorAll("svg g path");
             const tumGruplar = document.querySelectorAll("svg g");
 
