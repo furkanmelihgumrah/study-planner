@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KPSS Haftalık Plan & Tekrar Notları</title>
-
+    <title>KPSS Asistanı & Notlar</title>
+    
     <!-- Firebase Kütüphaneleri -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
@@ -40,26 +40,27 @@
             --header-text: #e0e0e0;
             --input-border: #555;
             --note-bg: #2a2a2a;
-            --checked-text: #888;
+            --checked-text: #888; 
             --btn-blue: #0d6efd;
             --scrollbar-thumb: #666;
             --scrollbar-track: #2a2a2a;
             --note-item-bg: #1e1e1e;
             --note-item-border: #444;
-            --day-card-bg: #fff;
-            --day-card-text: #333;
+            --day-card-bg: #1e1e1e;
+            --day-card-text: #e0e0e0;
         }
 
         body { font-family: 'Roboto', sans-serif; background-color: var(--bg-color); color: var(--text-color); margin: 0; padding: 2vh 2vw; height: 100vh; box-sizing: border-box; display: flex; justify-content: center; overflow: hidden; transition: background-color 0.3s, color 0.3s; }
         .container { background-color: var(--container-bg); max-width: 1400px; width: 100%; height: 100%; padding: 15px 25px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); display: flex; flex-direction: column; box-sizing: border-box; transition: background-color 0.3s; overflow: hidden; position: relative; }
-
-        .view-section { display: none; flex-direction: column; height: 100%; }
+        
+        /* GÜNCELLENDİ: Esnek kutuların taşmasını engelleyen min-height: 0 ayarı */
+        .view-section { display: none; flex-direction: column; height: 100%; flex-grow: 1; min-height: 0; }
         .view-section.active { display: flex; animation: fadeIn 0.4s ease-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
         .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--card-border); padding-bottom: 10px; margin-bottom: 15px; flex-shrink: 0; flex-wrap: wrap; gap: 15px; }
         .header h1 { font-family: 'Oswald', sans-serif; font-size: 36px; margin: 0; text-transform: uppercase; letter-spacing: 2px; }
-
+        
         #loading-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: var(--container-bg); z-index: 9999; display: flex; justify-content: center; align-items: center; flex-direction: column; transition: opacity 0.5s; }
         .loader { border: 6px solid var(--input-border); border-top: 6px solid var(--btn-blue); border-radius: 50%; width: 50px; height: 50px; animation: spin 1s linear infinite; margin-bottom: 15px; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
@@ -71,8 +72,8 @@
         .btn-custom:hover { opacity: 0.8; transform: translateY(-1px); }
         .btn-primary { background-color: var(--btn-blue); border-color: var(--btn-blue); color: white; }
         .datetime-display { background-color: var(--header-bg); color: var(--header-text); border: 1px solid var(--card-border); padding: 8px 15px; border-radius: 15px; font-size: 14px; font-family: 'Roboto', sans-serif; font-weight: bold; display: flex; align-items: center; justify-content: center; min-width: 220px; letter-spacing: 0.5px; }
-
-        /* --- YENİ: ANA MENÜ (HOME) STİLLERİ --- */
+        
+        /* --- ANA MENÜ (HOME) STİLLERİ --- */
         .home-view-content { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; gap: 35px; text-align: center; }
         .home-title { font-family: 'Oswald', sans-serif; font-size: 56px; margin: 0; color: var(--text-color); letter-spacing: 2px; }
         .home-buttons { display: flex; gap: 20px; flex-wrap: wrap; justify-content: center; margin-top: 10px; }
@@ -80,50 +81,74 @@
         .home-btn:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.15); background-color: var(--btn-blue); border-color: var(--btn-blue); }
         .home-btn-icon { font-size: 40px; }
 
-        .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; flex-grow: 1; margin-bottom: 10px; min-height: 0; }
-        .day-card, .notes-card { border: 2px solid var(--card-border); border-radius: 15px; padding: 10px 15px; display: flex; flex-direction: column; transition: all 0.3s; overflow-y: auto; }
-        .day-card, #planner-notes { background-color: var(--day-card-bg); color: var(--day-card-text); }
-        .notes-card { background-color: var(--note-bg); }
-
         ::-webkit-scrollbar { width: 8px; height: 8px; }
         ::-webkit-scrollbar-track { background: var(--scrollbar-track); border-radius: 4px; }
         ::-webkit-scrollbar-thumb { background: var(--scrollbar-thumb); border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: var(--btn-blue); }
 
-        .day-card h3, .notes-card h3 { background-color: var(--header-bg); color: var(--header-text); text-align: center; margin: -10px -15px 10px -15px; padding: 8px; border-radius: 12px 12px 0 0; text-transform: uppercase; font-size: 16px; position: sticky; top: -10px; z-index: 2; }
-        .task-row { display: flex; align-items: flex-start; margin-bottom: 12px; width: 100%; }
-        .task-row input[type="checkbox"] { width: 18px; height: 18px; cursor: pointer; margin-right: 8px; margin-top: 2px; flex-shrink: 0; accent-color: #007bff; }
-        .task-text { flex-grow: 1; border-bottom: 1px dashed var(--input-border); font-size: 14px; padding: 2px 4px; outline: none; min-height: 20px; word-break: break-word; color: var(--day-card-text); transition: all 0.3s ease; white-space: pre-wrap; }
+        /* --- GÜNCELLENDİ: YAPILACAKLAR / NOT BLOKLARI --- */
+        .todo-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); 
+            gap: 20px; 
+            flex-grow: 1; 
+            overflow-y: auto; 
+            padding: 5px 5px 30px 5px; /* Alt kısımdan kesilmemesi için padding-bottom artırıldı */
+            align-items: start; 
+            min-height: 0; /* Taşıp kaybolmayı engeller */
+        }
+        
+        .todo-card { background-color: var(--day-card-bg); border: 2px solid var(--card-border); border-radius: 12px; display: flex; flex-direction: column; height: 380px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); transition: 0.3s; overflow: hidden; }
+        .todo-card:hover { box-shadow: 0 6px 12px rgba(0,0,0,0.1); }
+        
+        .todo-header { background-color: var(--header-bg); color: var(--header-text); padding: 12px 15px; display: flex; align-items: center; justify-content: space-between; }
+        .todo-title-input { font-family: 'Oswald', sans-serif; font-size: 18px; color: var(--header-text); background: transparent; border: none; outline: none; width: 100%; text-transform: uppercase; letter-spacing: 1px; }
+        .todo-title-input::placeholder { color: rgba(255,255,255,0.6); }
+        .todo-delete-block { background: none; border: none; color: #ff4d4d; font-size: 18px; cursor: pointer; opacity: 0.7; transition: 0.2s; padding: 0; margin-left: 10px; flex-shrink: 0; }
+        .todo-delete-block:hover { opacity: 1; transform: scale(1.2); }
+        
+        /* GÜNCELLENDİ: min-height: 0 eklendi */
+        .todo-body { padding: 15px; flex-grow: 1; display: flex; flex-direction: column; overflow: hidden; min-height: 0; }
+        
+        /* GÜNCELLENDİ: min-height: 0 eklendi */
+        .todo-task-list { flex-grow: 1; overflow-y: auto; padding-right: 5px; margin-bottom: 10px; display: flex; flex-direction: column; gap: 8px; min-height: 0; }
+        .todo-task-list::-webkit-scrollbar { width: 4px; }
+        .todo-task-list::-webkit-scrollbar-thumb { background-color: var(--input-border); border-radius: 4px; }
+
+        .task-row { display: flex; align-items: flex-start; width: 100%; gap: 8px; position: relative; padding: 4px 0; border-bottom: 1px dashed var(--input-border); }
+        .task-row input[type="checkbox"] { width: 18px; height: 18px; cursor: pointer; margin-top: 2px; flex-shrink: 0; accent-color: var(--btn-blue); }
+        .task-text { flex-grow: 1; font-size: 14.5px; outline: none; min-height: 20px; word-break: break-word; color: var(--day-card-text); transition: all 0.3s ease; white-space: pre-wrap; line-height: 1.4; padding-right: 20px; }
         .task-text:empty:before { content: attr(data-placeholder); color: #999; pointer-events: none; }
-        .task-text:focus { border-bottom: 1px solid #007bff; }
-        .task-row input[type="checkbox"]:checked + .task-text { text-decoration: line-through; color: var(--checked-text); border-bottom: 1px dashed transparent; }
-        .btn-clear { display: block; width: 250px; margin: 5px auto 0; padding: 8px; background-color: #dc3545; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 15px; font-weight: bold; flex-shrink: 0; transition: 0.2s; }
-        .btn-clear:hover { background-color: #c82333; transform: translateY(-2px); }
+        .task-row input[type="checkbox"]:checked + .task-text { text-decoration: line-through; color: var(--checked-text); opacity: 0.7; }
+        
+        .task-delete { position: absolute; right: 0; top: 4px; cursor: pointer; color: #dc3545; background: none; border: none; font-size: 14px; padding: 0; opacity: 0; transition: 0.2s; }
+        .task-row:hover .task-delete { opacity: 1; }
+        .task-delete:hover { transform: scale(1.2); }
 
         /* --- TEKRAR NOTLARI SAYFASI --- */
-        .course-list { display: flex; flex-direction: column; gap: 15px; overflow-y: auto; padding-right: 10px; flex-grow: 1; }
+        /* GÜNCELLENDİ: Taşmaları engellemek için min-height ve padding eklendi */
+        .course-list { display: flex; flex-direction: column; gap: 15px; overflow-y: auto; padding-right: 10px; flex-grow: 1; min-height: 0; padding-bottom: 25px; }
         .course-detail { border: 2px solid var(--card-border); border-radius: 10px; background-color: var(--container-bg); overflow: hidden; flex-shrink: 0; }
         .course-detail summary { background-color: var(--header-bg); color: var(--header-text); padding: 15px; font-size: 18px; font-weight: bold; cursor: pointer; list-style: none; text-transform: uppercase; letter-spacing: 1px; display: flex; justify-content: space-between; }
         .course-detail summary::-webkit-details-marker { display: none; }
         .course-detail summary::after { content: '+'; font-size: 20px; }
         .course-detail[open] summary::after { content: '-'; }
-
+        
         .unit-container { padding: 15px; background-color: var(--note-bg); display: flex; flex-direction: column; gap: 15px; }
-
         .unit-actions { display: flex; flex-direction: column; gap: 10px; margin-bottom: 15px; }
         .add-note-box { background-color: var(--container-bg); border: 1px solid var(--input-border); border-radius: 8px; padding: 10px; display: flex; flex-direction: column; gap: 10px; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02); }
         .quick-add-input { width: 100%; min-height: 60px; border: none; resize: vertical; font-family: 'Roboto', sans-serif; font-size: 14.5px; line-height: 1.5; background: transparent; color: var(--text-color); outline: none; }
         .add-btn-container { display: flex; justify-content: flex-end; }
         .quick-add-btn { background-color: var(--btn-blue); color: white; border: none; padding: 8px 25px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 14px; transition: 0.2s; }
         .quick-add-btn:hover { background-color: #0b5ed7; transform: translateY(-1px); }
-
+        
         .btn-review { background-color: #198754; color: white; border: none; padding: 12px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 16px; text-align: center; display: block; width: 100%; box-shadow: 0 2px 4px rgba(0,0,0,0.1); transition: 0.2s; }
         .btn-review:hover { background-color: #157347; transform: translateY(-1px); }
-
+        
         .notes-ul { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 15px; }
         .note-item { background-color: var(--note-item-bg); border: 1px solid var(--note-item-border); border-left: 4px solid var(--btn-blue); padding: 12px; border-radius: 8px; display: flex; flex-direction: column; height: 160px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); transition: transform 0.2s, box-shadow 0.2s; box-sizing: border-box; }
         .note-item:hover { transform: translateY(-2px); box-shadow: 0 6px 12px rgba(0,0,0,0.05); }
-
+        
         .note-content { flex-grow: 1; outline: none; font-size: 14px; line-height: 1.5; word-break: break-word; color: var(--text-color); overflow-y: auto; padding-right: 5px; margin-bottom: 5px; white-space: pre-wrap; }
         .note-content::-webkit-scrollbar { width: 4px; }
         .note-content::-webkit-scrollbar-thumb { background-color: var(--input-border); border-radius: 4px; }
@@ -146,7 +171,7 @@
         @media (max-width: 900px) {
             body { height: auto; overflow: auto; padding: 10px; }
             .container { padding: 15px; }
-            .grid { grid-template-columns: repeat(2, 1fr); overflow-y: visible;}
+            .todo-grid { grid-template-columns: repeat(2, 1fr); overflow-y: visible;}
             .header { flex-direction: column; justify-content: center; gap: 10px; }
             .header-controls { justify-content: center; width: 100%; }
             .home-title { font-size: 42px; }
@@ -154,7 +179,7 @@
         }
 
         @media (max-width: 600px) {
-            .grid { grid-template-columns: 1fr; }
+            .todo-grid { grid-template-columns: 1fr; }
             .header h1 { font-size: 28px; text-align: center; }
             .btn-custom { padding: 10px 15px; font-size: 14px; flex-grow: 1; }
             .datetime-display { width: 100%; padding: 10px; font-size: 13px; }
@@ -167,34 +192,34 @@
 <body spellcheck="false">
 
 <div class="container">
-
+    
     <div id="loading-overlay">
         <div class="loader"></div>
         <h2 style="font-family: 'Oswald', sans-serif;">Veritabanına Bağlanılıyor...</h2>
         <p>Senkronize ediliyor, lütfen bekleyin.</p>
     </div>
 
-    <!-- 0. YENİ: ANA MENÜ (HOME) GÖRÜNÜMÜ -->
+    <!-- 0. ANA MENÜ (HOME) GÖRÜNÜMÜ -->
     <div id="home-view" class="view-section active">
         <div class="header" style="justify-content: flex-end; border-bottom: none; margin-bottom: 0;">
             <button class="btn-custom theme-toggle-btn">🌙 Karanlık Mod</button>
         </div>
-
+        
         <div class="home-view-content">
             <h1 class="home-title">KPSS ÖNLİSANS ASİSTANI</h1>
-
+            
             <div class="countdown kpss-sayac" style="font-size: 20px; padding: 10px 25px;">
                 KPSS'ye <span class="kalan-gun">...</span> Gün Kaldı
             </div>
-
+            
             <div class="datetime-display real-time-display" style="font-size: 18px; padding: 10px 25px; border-width: 2px;">
                 Yükleniyor...
             </div>
-
+            
             <div class="home-buttons">
-                <button class="home-btn" onclick="sayfaDegistir('planner-view')">
-                    <span class="home-btn-icon">🗓️</span>
-                    Haftalık Plan
+                <button class="home-btn" onclick="sayfaDegistir('todo-view')">
+                    <span class="home-btn-icon">📝</span>
+                    Yapılacaklar / Notlar
                 </button>
                 <button class="home-btn" onclick="sayfaDegistir('notes-view')">
                     <span class="home-btn-icon">📚</span>
@@ -212,106 +237,41 @@
         </div>
     </div>
 
-    <!-- 1. GÖRÜNÜM: HAFTALIK PLAN -->
-    <div id="planner-view" class="view-section">
+    <!-- 1. YAPILACAKLAR / NOT BLOKLARI EKRANI -->
+    <div id="todo-view" class="view-section">
         <div class="header">
-            <h1>HAFTALIK PLAN</h1>
+            <h1>YAPILACAKLAR / NOTLAR</h1>
             <div class="countdown kpss-sayac">KPSS'ye <span class="kalan-gun">...</span> Gün Kaldı</div>
             <div class="header-controls">
                 <button class="btn-custom btn-primary" onclick="sayfaDegistir('home-view')">🏠 Ana Menü</button>
                 <button class="btn-custom btn-primary" onclick="sayfaDegistir('notes-view')">📚 Tekrar Notlarım</button>
                 <button class="btn-custom theme-toggle-btn">🌙 Karanlık Mod</button>
-                <div class="datetime-display real-time-display">Yükleniyor...</div>
             </div>
         </div>
 
-        <div class="grid">
-            <div class="day-card" id="pazartesi">
-                <h3>Pazartesi</h3>
-                <div class="task-row"><input type="checkbox" id="check_0"><div id="task_0" contenteditable="true" class="task-text" data-placeholder="Görev ekle..."></div></div>
-                <div class="task-row"><input type="checkbox" id="check_1"><div id="task_1" contenteditable="true" class="task-text" data-placeholder="Görev ekle..."></div></div>
-                <div class="task-row"><input type="checkbox" id="check_2"><div id="task_2" contenteditable="true" class="task-text" data-placeholder="Görev ekle..."></div></div>
-                <div class="task-row"><input type="checkbox" id="check_3"><div id="task_3" contenteditable="true" class="task-text" data-placeholder="Görev ekle..."></div></div>
-                <div class="task-row"><input type="checkbox" id="check_4"><div id="task_4" contenteditable="true" class="task-text" data-placeholder="Görev ekle..."></div></div>
-            </div>
-            <div class="day-card" id="sali">
-                <h3>Salı</h3>
-                <div class="task-row"><input type="checkbox" id="check_5"><div id="task_5" contenteditable="true" class="task-text" data-placeholder="Görev ekle..."></div></div>
-                <div class="task-row"><input type="checkbox" id="check_6"><div id="task_6" contenteditable="true" class="task-text" data-placeholder="Görev ekle..."></div></div>
-                <div class="task-row"><input type="checkbox" id="check_7"><div id="task_7" contenteditable="true" class="task-text" data-placeholder="Görev ekle..."></div></div>
-                <div class="task-row"><input type="checkbox" id="check_8"><div id="task_8" contenteditable="true" class="task-text" data-placeholder="Görev ekle..."></div></div>
-                <div class="task-row"><input type="checkbox" id="check_9"><div id="task_9" contenteditable="true" class="task-text" data-placeholder="Görev ekle..."></div></div>
-            </div>
-            <div class="day-card" id="carsamba">
-                <h3>Çarşamba</h3>
-                <div class="task-row"><input type="checkbox" id="check_10"><div id="task_10" contenteditable="true" class="task-text" data-placeholder="Görev ekle..."></div></div>
-                <div class="task-row"><input type="checkbox" id="check_11"><div id="task_11" contenteditable="true" class="task-text" data-placeholder="Görev ekle..."></div></div>
-                <div class="task-row"><input type="checkbox" id="check_12"><div id="task_12" contenteditable="true" class="task-text" data-placeholder="Görev ekle..."></div></div>
-                <div class="task-row"><input type="checkbox" id="check_13"><div id="task_13" contenteditable="true" class="task-text" data-placeholder="Görev ekle..."></div></div>
-                <div class="task-row"><input type="checkbox" id="check_14"><div id="task_14" contenteditable="true" class="task-text" data-placeholder="Görev ekle..."></div></div>
-            </div>
-            <div class="day-card" id="persembe">
-                <h3>Perşembe</h3>
-                <div class="task-row"><input type="checkbox" id="check_15"><div id="task_15" contenteditable="true" class="task-text" data-placeholder="Görev ekle..."></div></div>
-                <div class="task-row"><input type="checkbox" id="check_16"><div id="task_16" contenteditable="true" class="task-text" data-placeholder="Görev ekle..."></div></div>
-                <div class="task-row"><input type="checkbox" id="check_17"><div id="task_17" contenteditable="true" class="task-text" data-placeholder="Görev ekle..."></div></div>
-                <div class="task-row"><input type="checkbox" id="check_18"><div id="task_18" contenteditable="true" class="task-text" data-placeholder="Görev ekle..."></div></div>
-                <div class="task-row"><input type="checkbox" id="check_19"><div id="task_19" contenteditable="true" class="task-text" data-placeholder="Görev ekle..."></div></div>
-            </div>
+        <div style="display: flex; justify-content: flex-end; margin-bottom: 15px;">
+            <button class="btn-review" onclick="todoBlokuEkle()" style="background-color: var(--btn-blue); width: auto; padding: 10px 25px;">
+                ➕ Yeni Liste Ekle
+            </button>
         </div>
 
-        <div class="grid">
-            <div class="day-card" id="cuma">
-                <h3>Cuma</h3>
-                <div class="task-row"><input type="checkbox" id="check_20"><div id="task_20" contenteditable="true" class="task-text" data-placeholder="Görev ekle..."></div></div>
-                <div class="task-row"><input type="checkbox" id="check_21"><div id="task_21" contenteditable="true" class="task-text" data-placeholder="Görev ekle..."></div></div>
-                <div class="task-row"><input type="checkbox" id="check_22"><div id="task_22" contenteditable="true" class="task-text" data-placeholder="Görev ekle..."></div></div>
-                <div class="task-row"><input type="checkbox" id="check_23"><div id="task_23" contenteditable="true" class="task-text" data-placeholder="Görev ekle..."></div></div>
-                <div class="task-row"><input type="checkbox" id="check_24"><div id="task_24" contenteditable="true" class="task-text" data-placeholder="Görev ekle..."></div></div>
-            </div>
-            <div class="day-card" id="cumartesi">
-                <h3>Cumartesi</h3>
-                <div class="task-row"><input type="checkbox" id="check_25"><div id="task_25" contenteditable="true" class="task-text" data-placeholder="Görev ekle..."></div></div>
-                <div class="task-row"><input type="checkbox" id="check_26"><div id="task_26" contenteditable="true" class="task-text" data-placeholder="Görev ekle..."></div></div>
-                <div class="task-row"><input type="checkbox" id="check_27"><div id="task_27" contenteditable="true" class="task-text" data-placeholder="Görev ekle..."></div></div>
-                <div class="task-row"><input type="checkbox" id="check_28"><div id="task_28" contenteditable="true" class="task-text" data-placeholder="Görev ekle..."></div></div>
-                <div class="task-row"><input type="checkbox" id="check_29"><div id="task_29" contenteditable="true" class="task-text" data-placeholder="Görev ekle..."></div></div>
-            </div>
-            <div class="day-card" id="pazar">
-                <h3>Pazar</h3>
-                <div class="task-row"><input type="checkbox" id="check_30"><div id="task_30" contenteditable="true" class="task-text" data-placeholder="Görev ekle..."></div></div>
-                <div class="task-row"><input type="checkbox" id="check_31"><div id="task_31" contenteditable="true" class="task-text" data-placeholder="Görev ekle..."></div></div>
-                <div class="task-row"><input type="checkbox" id="check_32"><div id="task_32" contenteditable="true" class="task-text" data-placeholder="Görev ekle..."></div></div>
-                <div class="task-row"><input type="checkbox" id="check_33"><div id="task_33" contenteditable="true" class="task-text" data-placeholder="Görev ekle..."></div></div>
-                <div class="task-row"><input type="checkbox" id="check_34"><div id="task_34" contenteditable="true" class="task-text" data-placeholder="Görev ekle..."></div></div>
-            </div>
-
-            <div class="notes-card" id="planner-notes">
-                <h3>NOTLAR</h3>
-                <div class="task-row"><input type="checkbox" id="check_35"><div id="task_35" contenteditable="true" class="task-text" data-placeholder="Haftalık hedef/not..."></div></div>
-                <div class="task-row"><input type="checkbox" id="check_36"><div id="task_36" contenteditable="true" class="task-text" data-placeholder="Haftalık hedef/not..."></div></div>
-                <div class="task-row"><input type="checkbox" id="check_37"><div id="task_37" contenteditable="true" class="task-text" data-placeholder="Haftalık hedef/not..."></div></div>
-                <div class="task-row"><input type="checkbox" id="check_38"><div id="task_38" contenteditable="true" class="task-text" data-placeholder="Haftalık hedef/not..."></div></div>
-                <div class="task-row"><input type="checkbox" id="check_39"><div id="task_39" contenteditable="true" class="task-text" data-placeholder="Haftalık hedef/not..."></div></div>
-            </div>
+        <div class="todo-grid" id="todo-grid-container">
+            <!-- Dinamik not listeleri buraya yüklenecek -->
         </div>
-
-        <button class="btn-clear" onclick="haftayiTemizle()">Tüm Haftayı Temizle</button>
     </div>
 
-    <!-- 2. GÖRÜNÜM: TEKRAR NOTLARI -->
+    <!-- 2. TEKRAR NOTLARI -->
     <div id="notes-view" class="view-section">
         <div class="header">
             <h1>TEKRAR NOTLARIM (ÖNLİSANS)</h1>
             <div class="countdown kpss-sayac">KPSS'ye <span class="kalan-gun">...</span> Gün Kaldı</div>
             <div class="header-controls">
                 <button class="btn-custom btn-primary" onclick="sayfaDegistir('home-view')">🏠 Ana Menü</button>
-                <button class="btn-custom btn-primary" onclick="sayfaDegistir('planner-view')">🗓️ Haftalık Plan</button>
+                <button class="btn-custom btn-primary" onclick="sayfaDegistir('todo-view')">📝 Yapılacaklar</button>
                 <button class="btn-custom theme-toggle-btn">🌙 Karanlık Mod</button>
-                <div class="datetime-display real-time-display">Yükleniyor...</div>
             </div>
         </div>
-
+        
         <div class="course-list">
             <!-- TARİH -->
             <details class="course-detail">
@@ -319,7 +279,7 @@
                 <div class="unit-container">
                     <div class="unit-actions">
                         <div class="add-note-box">
-                            <textarea class="quick-add-input" id="input-tarih" placeholder="Tarih dersi için yeni bir not yazın... (Kısayol: Enter tuşu ile hızlıca ekleyebilirsiniz)"></textarea>
+                            <textarea class="quick-add-input" id="input-tarih" placeholder="Tarih dersi için yeni bir not yazın... (Kısayol: Enter)"></textarea>
                             <div class="add-btn-container">
                                 <button class="quick-add-btn" onclick="notEkle('tarih')">Ekle +</button>
                             </div>
@@ -329,7 +289,7 @@
                     <div class="notes-ul" id="list-tarih"></div>
                 </div>
             </details>
-
+            
             <!-- COĞRAFYA -->
             <details class="course-detail">
                 <summary>Coğrafya</summary>
@@ -346,7 +306,7 @@
                     <div class="notes-ul" id="list-cografya"></div>
                 </div>
             </details>
-
+            
             <!-- VATANDAŞLIK -->
             <details class="course-detail">
                 <summary>Vatandaşlık</summary>
@@ -363,7 +323,7 @@
                     <div class="notes-ul" id="list-vatandaslik"></div>
                 </div>
             </details>
-
+            
             <!-- TÜRKÇE -->
             <details class="course-detail">
                 <summary>Türkçe</summary>
@@ -380,7 +340,7 @@
                     <div class="notes-ul" id="list-turkce"></div>
                 </div>
             </details>
-
+            
             <!-- MATEMATİK -->
             <details class="course-detail">
                 <summary>Matematik</summary>
@@ -397,7 +357,7 @@
                     <div class="notes-ul" id="list-matematik"></div>
                 </div>
             </details>
-
+            
             <!-- GÜNCEL BİLGİLER -->
             <details class="course-detail">
                 <summary>Güncel Bilgiler</summary>
@@ -419,6 +379,7 @@
     </div>
 </div>
 
+<!-- TEKRAR POP-UP -->
 <div id="review-modal" class="modal-overlay">
     <div class="modal-content">
         <button class="modal-close" onclick="kapatTekrar()">✖</button>
@@ -448,7 +409,6 @@
   appId: "1:613831557767:web:28487f99370976da466e22",
   measurementId: "G-8GQV4HGCB7"
 };
-
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
@@ -457,7 +417,6 @@
         document.getElementById(viewId).classList.add('active');
     }
 
-    // TEMA AYARLARI (Çoklu Buton Uyumu)
     const themeBtns = document.querySelectorAll('.theme-toggle-btn');
     if(localStorage.getItem('kpss_theme') === 'dark') {
         document.body.classList.add('dark-mode');
@@ -473,17 +432,13 @@
         });
     });
 
-    // SAYAC VE SAAT
     function sayaciGuncelle() {
         const sinavTarihi = new Date("October 4, 2026 00:00:00").getTime();
         const simdi = new Date().getTime();
         const fark = sinavTarihi - simdi;
         const kalanGun = Math.ceil(fark / (1000 * 60 * 60 * 24));
-
-        document.querySelectorAll(".kalan-gun").forEach(el => {
-            el.innerText = fark < 0 ? "0" : kalanGun;
-        });
-
+        
+        document.querySelectorAll(".kalan-gun").forEach(el => { el.innerText = fark < 0 ? "0" : kalanGun; });
         if (fark < 0) {
             document.querySelectorAll(".kpss-sayac").forEach(el => {
                 el.innerHTML = "Sınav Günü Geldi, Başarılar!";
@@ -502,31 +457,26 @@
     document.addEventListener('DOMContentLoaded', () => {
         sayaciGuncelle(); saatVeTarihiGuncelle();
         setInterval(sayaciGuncelle, 1000 * 60 * 60 * 24);
-        setInterval(saatVeTarihiGuncelle, 1000);
+        setInterval(saatVeTarihiGuncelle, 1000); 
 
         db.ref('kpss_data').once('value').then((snapshot) => {
             const data = snapshot.val() || {};
 
-            // Planlayıcıyı doldur
-            document.querySelectorAll('.task-text').forEach((div, i) => {
-                if(data[`task_${i}`]) div.innerText = data[`task_${i}`];
-                div.addEventListener('input', () => db.ref('kpss_data/task_' + i).set(div.innerText));
+            // DİNAMİK YAPILACAKLAR (TODOS) YÜKLEME
+            const todos = data.todos || {};
+            Object.keys(todos).forEach(blockId => {
+                ekrandaTodoBlokuCiz(blockId, todos[blockId]);
             });
 
-            document.querySelectorAll('input[type="checkbox"]').forEach((cb, i) => {
-                if(data[`check_${i}`]) cb.checked = data[`check_${i}`];
-                cb.addEventListener('change', () => db.ref('kpss_data/check_' + i).set(cb.checked));
-            });
-
-            // Notları yükle ve Kısayol (Enter) ataması yap
+            // TEKRAR NOTLARI YÜKLEME
             document.querySelectorAll('.quick-add-input').forEach(input => {
                 const unitId = input.id.replace('input-', '');
                 const savedNotes = data[`notes_${unitId}`] || [];
                 savedNotes.forEach(text => ekrandaNotOlustur(unitId, text));
-
+                
                 input.addEventListener('keydown', function(e) {
                     if (e.key === 'Enter' && !e.shiftKey) {
-                        e.preventDefault();
+                        e.preventDefault(); 
                         notEkle(unitId);
                     }
                 });
@@ -541,16 +491,150 @@
         });
     });
 
+    // ==========================================
+    // DİNAMİK NOT BLOKLARI (TODOS)
+    // ==========================================
+    function todoBlokuEkle() {
+        const blockId = 'block_' + Date.now();
+        const initData = { title: "Yeni Liste", tasks: {} };
+        db.ref(`kpss_data/todos/${blockId}`).set(initData);
+        ekrandaTodoBlokuCiz(blockId, initData);
+    }
+
+    function ekrandaTodoBlokuCiz(blockId, data) {
+        const container = document.getElementById('todo-grid-container');
+        
+        const card = document.createElement('div');
+        card.className = 'todo-card';
+        card.id = `todo-${blockId}`;
+        
+        const header = document.createElement('div');
+        header.className = 'todo-header';
+        
+        const titleInput = document.createElement('input');
+        titleInput.type = 'text';
+        titleInput.className = 'todo-title-input';
+        titleInput.value = data.title || '';
+        titleInput.placeholder = 'LİSTE ADI...';
+        titleInput.addEventListener('input', () => db.ref(`kpss_data/todos/${blockId}/title`).set(titleInput.value));
+        
+        const delBlockBtn = document.createElement('button');
+        delBlockBtn.className = 'todo-delete-block';
+        delBlockBtn.innerHTML = '✖';
+        delBlockBtn.onclick = () => {
+            if(confirm("Bu listeyi tamamen silmek istediğine emin misin?")) {
+                db.ref(`kpss_data/todos/${blockId}`).remove();
+                card.remove();
+            }
+        };
+        
+        header.appendChild(titleInput);
+        header.appendChild(delBlockBtn);
+        
+        const body = document.createElement('div');
+        body.className = 'todo-body';
+
+        const taskList = document.createElement('div');
+        taskList.className = 'todo-task-list';
+        taskList.id = `task-list-${blockId}`;
+
+        const addWrap = document.createElement('div');
+        addWrap.style.display = 'flex';
+        addWrap.style.gap = '8px';
+        addWrap.style.marginTop = 'auto';
+
+        const taskInput = document.createElement('input');
+        taskInput.type = 'text';
+        taskInput.className = 'quick-add-input';
+        taskInput.style.minHeight = '36px';
+        taskInput.style.padding = '5px 10px';
+        taskInput.style.border = '1px dashed var(--input-border)';
+        taskInput.style.borderRadius = '5px';
+        taskInput.placeholder = 'Yeni madde... (Enter)';
+        taskInput.onkeypress = (e) => { if(e.key === 'Enter') ekleTask(blockId, taskInput); };
+
+        const addBtn = document.createElement('button');
+        addBtn.className = 'quick-add-btn';
+        addBtn.style.padding = '0 15px';
+        addBtn.innerHTML = '+';
+        addBtn.onclick = () => ekleTask(blockId, taskInput);
+
+        addWrap.appendChild(taskInput);
+        addWrap.appendChild(addBtn);
+
+        body.appendChild(taskList);
+        body.appendChild(addWrap);
+
+        card.appendChild(header);
+        card.appendChild(body);
+        container.appendChild(card);
+
+        if(data.tasks) {
+            Object.keys(data.tasks).forEach(taskId => {
+                ekrandaTaskOlustur(blockId, taskId, data.tasks[taskId]);
+            });
+        }
+    }
+
+    function ekleTask(blockId, inputEl) {
+        const text = inputEl.value.trim();
+        if(!text) return;
+        
+        const taskId = 'task_' + Date.now();
+        const taskData = { text: text, checked: false };
+        
+        db.ref(`kpss_data/todos/${blockId}/tasks/${taskId}`).set(taskData);
+        ekrandaTaskOlustur(blockId, taskId, taskData);
+        inputEl.value = '';
+    }
+
+    function ekrandaTaskOlustur(blockId, taskId, taskData) {
+        const list = document.getElementById(`task-list-${blockId}`);
+        if(!list) return;
+        
+        const row = document.createElement('div');
+        row.className = 'task-row';
+        row.id = `row-${blockId}-${taskId}`;
+        
+        const cb = document.createElement('input');
+        cb.type = 'checkbox';
+        cb.checked = taskData.checked || false;
+        cb.onchange = () => db.ref(`kpss_data/todos/${blockId}/tasks/${taskId}/checked`).set(cb.checked);
+        
+        const textDiv = document.createElement('div');
+        textDiv.className = 'task-text';
+        textDiv.contentEditable = true;
+        textDiv.spellcheck = false;
+        textDiv.innerText = taskData.text || '';
+        textDiv.oninput = () => db.ref(`kpss_data/todos/${blockId}/tasks/${taskId}/text`).set(textDiv.innerText);
+        
+        const delBtn = document.createElement('button');
+        delBtn.className = 'task-delete';
+        delBtn.innerHTML = '✖';
+        delBtn.onclick = () => {
+            db.ref(`kpss_data/todos/${blockId}/tasks/${taskId}`).remove();
+            row.remove();
+        };
+        
+        row.appendChild(cb);
+        row.appendChild(textDiv);
+        row.appendChild(delBtn);
+        list.appendChild(row);
+    }
+
+    // ==========================================
+    // TEKRAR (HAP BİLGİ) İŞLEMLERİ
+    // ==========================================
     function ekrandaNotOlustur(unitId, text) {
         const list = document.getElementById(`list-${unitId}`);
         const div = document.createElement('div');
         div.className = 'note-item';
         div.innerHTML = `<div class="note-content" contenteditable="true" spellcheck="false"></div><button class="note-delete">✖</button>`;
-
+        
         const noteContent = div.querySelector('.note-content');
         noteContent.innerText = text;
         noteContent.addEventListener('input', () => notlariKaydet(unitId));
-
+        
         div.querySelector('.note-delete').onclick = () => {
             div.remove();
             notlariKaydet(unitId);
@@ -572,30 +656,13 @@
         db.ref('kpss_data/notes_' + unitId).set(notes);
     }
 
-    function haftayiTemizle() {
-        if(confirm("Tüm haftalık planı ve işaretleri silmek istediğine emin misin?")) {
-            document.querySelectorAll('.task-text').forEach((div, i) => {
-                if(div.closest('.view-section').id === 'planner-view'){
-                    div.innerText = "";
-                    db.ref('kpss_data/task_' + i).remove();
-                }
-            });
-            document.querySelectorAll('input[type="checkbox"]').forEach((cb, i) => {
-                if(cb.closest('.view-section').id === 'planner-view'){
-                    cb.checked = false;
-                    db.ref('kpss_data/check_' + i).remove();
-                }
-            });
-        }
-    }
-
     let mevcutTekrarNotlari = [];
     let mevcutNotIndeksi = 0;
 
     function tekrarEt(unitId) {
         const listContainer = document.getElementById(`list-${unitId}`);
         const notesElements = listContainer.querySelectorAll('.note-content');
-
+        
         mevcutTekrarNotlari = Array.from(notesElements).map(el => el.innerText.trim()).filter(text => text !== '');
 
         if(mevcutTekrarNotlari.length === 0) {
@@ -622,7 +689,7 @@
     function oncekiNot() { if(mevcutNotIndeksi > 0) { mevcutNotIndeksi--; tekrarArayuzunuGuncelle(); } }
     function sonrakiNot() { if(mevcutNotIndeksi < mevcutTekrarNotlari.length - 1) { mevcutNotIndeksi++; tekrarArayuzunuGuncelle(); } }
     function kapatTekrar() { document.getElementById('review-modal').style.display = 'none'; }
-
+    
     window.onclick = function(event) {
         const modal = document.getElementById('review-modal');
         if (event.target === modal) kapatTekrar();
